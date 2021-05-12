@@ -13,7 +13,7 @@ For non-critical issues, please open an [issue](https://github.com/mhupfauer/pic
 
 
 ### Security critical issues
-If you find an issue that could seriously threathen the security of systems please disclose this vulnerability via [E-Mail](mailto:markus@hupfauer.one?subject?VULNERABILITY).
+If you find an issue that could seriously threaten the security of systems running this software please disclose this vulnerability via [E-Mail](mailto:markus@hupfauer.one?subject?VULNERABILITY). Please be responsible and only disclose your findings privately to us. Especially findings regarding the i/o to the relay controlling 230V / 120V circuits should be considered critical!
 
 If you can please encrypt the message via PGP:
 
