@@ -36,10 +36,8 @@ def get_all_sensor_data():
     if len(installed_hardware) == 0:
         setup_hardware()
 
-    to_return = {}
-
-    for hardware in installed_hardware.items():
-        if isinstance(hardware[1], Sensor):
-            to_return[hardware[0]] = hardware[1].get_normalized_sensor_data()
-
-    return to_return
+    return {
+        hardware[0]: hardware[1].get_normalized_sensor_data()
+        for hardware in installed_hardware.items()
+        if isinstance(hardware[1], Sensor)
+    }

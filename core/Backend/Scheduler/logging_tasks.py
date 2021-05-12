@@ -12,9 +12,10 @@ from core.Backend.hardware_controller import get_all_sensor_data
     start_date="2000-01-01 12:19:00",
 )
 def log_every_ten_seconds():
-    to_write = []
-    for data in get_all_sensor_data().items():
-        to_write.append((time.time(), data[0], data[1]))
+    to_write = [
+        (time.time(), data[0], data[1])
+        for data in get_all_sensor_data().items()
+    ]
 
     with scheduler.app.app_context():
         db = db_handler.get_db()
