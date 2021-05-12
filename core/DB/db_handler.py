@@ -1,12 +1,12 @@
 import os
 import sqlite3
-from flask import current_app,g
+from flask import current_app, g
 
 
 def get_db():
-    if 'db' not in g:
+    if "db" not in g:
         g.db = sqlite3.connect(
-            current_app.config['DATABASE'],
+            current_app.config["DATABASE"],
             detect_types=sqlite3.PARSE_DECLTYPES,
         )
         g.db.row_factory = sqlite3.Row
@@ -14,17 +14,17 @@ def get_db():
 
 
 def close_db(e=None):
-    db = g.pop('db', None)
+    db = g.pop("db", None)
     if db is not None:
         db.close()
 
 
 def init_db(app):
     with app.app_context():
-        if not os.path.isfile(current_app.config['DATABASE']):
-            with current_app.open_resource('DB/schema.sql') as f:
+        if not os.path.isfile(current_app.config["DATABASE"]):
+            with current_app.open_resource("DB/schema.sql") as f:
                 db = get_db()
-                db.cursor().executescript(f.read().decode('utf-8'))
+                db.cursor().executescript(f.read().decode("utf-8"))
                 db.commit()
                 db.cursor().close()
 

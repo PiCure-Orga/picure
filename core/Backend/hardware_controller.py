@@ -10,11 +10,15 @@ def setup_hardware():
     for hardware in hw_config.items():
         global installed_hardware
         if hardware[1].get("TYPE") == "Hardware":
-            installed_hardware[hardware[0]] = Hardware(hardware[1].get("GPIO"), hardware[1].get("HARDWARE_TYPE"))
+            installed_hardware[hardware[0]] = Hardware(
+                hardware[1].get("GPIO"), hardware[1].get("HARDWARE_TYPE")
+            )
         elif hardware[1].get("TYPE") == "Sensor":
             installed_hardware[hardware[0]] = Sensor(hardware[1].get("SENSOR_TYPE"))
         else:
-            raise Exception("CONFIG Property '" + str(hardware[1].get("TYPE")) + "' not implemented")
+            raise Exception(
+                "CONFIG Property '" + str(hardware[1].get("TYPE")) + "' not implemented"
+            )
 
 
 def get_hardware_states():

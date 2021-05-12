@@ -5,9 +5,9 @@ class Hardware:
     DEV = None
 
     def __init__(self, pin, hardware):
-        if hardware == 'Relay':
+        if hardware == "Relay":
             self.DEV = Relay(pin)
-        elif hardware == 'Mock':
+        elif hardware == "Mock":
             self.DEV = HardwareMock(pin)
         else:
             raise Exception("Hardware not yet implemented")

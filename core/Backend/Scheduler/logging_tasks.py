@@ -4,6 +4,7 @@ from core.DB import db_handler
 from . import scheduler
 from core.Backend.hardware_controller import get_all_sensor_data
 
+
 @scheduler.task(
     "interval",
     id="every_ten_seconds",
@@ -18,10 +19,15 @@ def log_every_ten_seconds():
 
     with scheduler.app.app_context():
         db = db_handler.get_db()
-        db.cursor().executemany('insert into latest_10_minutes (timestamp, sensor, value) values (?, ?, ?)', to_write)
-        db.cursor().execute('DELETE FROM latest_10_minutes where id < '
-                            '(SELECT MIN(id) from ('
-                            'select id from latest_10_minutes order by id desc limit 100))')
+        db.cursor().executemany(
+            "insert into latest_10_minutes (timestamp, sensor, value) values (?, ?, ?)",
+            to_write,
+        )
+        db.cursor().execute(
+            "DELETE FROM latest_10_minutes where id < "
+            "(SELECT MIN(id) from ("
+            "select id from latest_10_minutes order by id desc limit 100))"
+        )
         db.commit()
         db.cursor().close()
 
@@ -36,8 +42,14 @@ def log_every_ten_seconds():
 def calculate_minute_avg():
     with scheduler.app.app_context():
         db = db_handler.get_db()
-        result = db.cursor().execute('select sensor, avg(value) as avg from latest_10_minutes group by sensor').fetchall()
+        result = (
+            db.cursor()
+            .execute(
+                "select sensor, avg(value) as avg from latest_10_minutes group by sensor"
+            )
+            .fetchall()
+        )
         db.cursor().close()
 
         for s in result:
-            print(s['sensor'] + " AVG: "+ str(s['avg']))
+            print(s["sensor"] + " AVG: " + str(s["avg"]))
