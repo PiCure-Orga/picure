@@ -1,0 +1,6 @@
+{
+  "contributors": [ "mhupfauer" ],
+  "message": "We strongly belive in proper licensing - even for small projects like this. In order to fully sign away any intellectual property we need a singed Contributer License Agreement. Please contact @mhupfauer via [E-Mail](mailto:markus@hupfauer.one?subject=picure%2520CLA%2520for%2520new%2520PR) for a digitaly signable contract.",
+  "label": "CLA-OK",
+  "recheckComment": "are-you-sure-clabot"
+}

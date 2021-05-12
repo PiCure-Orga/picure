@@ -1,0 +1,19 @@
+HEATING:
+  TYPE: Hardware
+  GPIO: 17
+  HARDWARE_TYPE: Mock
+
+UV:
+  TYPE: Hardware
+  GPIO: 18
+  HARDWARE_TYPE: Mock
+
+SENSOR_TEMP:
+  TYPE: Sensor
+  #SENSOR_TYPE: SHT1_Temperature_Kernel
+  SENSOR_TYPE: Mock
+
+SENSOR_HUMID:
+  TYPE: Sensor
+  #SENSOR_TYPE: SHT1_Humidity_Kernel
+  SENSOR_TYPE: Mock
