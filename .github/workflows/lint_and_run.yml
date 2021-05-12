@@ -40,5 +40,5 @@ jobs:
         python setup.py install
         python flask run
       env: |
-        FLASK_APP: core/__init__.py
-        FLASK_ENV: development
+        FLASK_APP: 'core/__init__.py'
+        FLASK_ENV: 'development'
