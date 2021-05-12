@@ -37,6 +37,7 @@ def get_all_sensor_data():
         setup_hardware()
 
     to_return = {}
+
     for hardware in installed_hardware.items():
         if isinstance(hardware[1], Sensor):
             to_return[hardware[0]] = hardware[1].get_normalized_sensor_data()
