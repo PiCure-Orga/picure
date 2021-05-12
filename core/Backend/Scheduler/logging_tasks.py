@@ -12,7 +12,6 @@ from core.Backend.hardware_controller import get_all_sensor_data
     start_date="2000-01-01 12:19:00",
 )
 def log_every_ten_seconds():
-    print("test")
     to_write = []
     for data in get_all_sensor_data().items():
         to_write.append((time.time(), data[0], data[1]))
@@ -37,6 +36,8 @@ def log_every_ten_seconds():
 def calculate_minute_avg():
     with scheduler.app.app_context():
         db = db_handler.get_db()
-        db.cursor().execute('select * from latest_10_minutes')
-        result = db.cursor().fetchall()
-        print(result)
+        result = db.cursor().execute('select sensor, avg(value) as avg from latest_10_minutes group by sensor').fetchall()
+        db.cursor().close()
+
+        for s in result:
+            print(s['sensor'] + " AVG: "+ str(s['avg']))
