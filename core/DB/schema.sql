@@ -5,10 +5,11 @@ CREATE TABLE latest_10_minutes(
     timestamp INTEGER,
     sensor TEXT,
     value DECIMAL(4,2)
-)
-CREATE TABLE latest_30_minutes(
+);
+
+CREATE TABLE latest_30_days(
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     timestamp INTEGER,
     sensor TEXT,
     value DECIMAL(4,2)
-)
+);

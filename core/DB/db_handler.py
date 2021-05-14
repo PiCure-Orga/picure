@@ -1,6 +1,7 @@
 import os
 import sqlite3
 from flask import current_app, g
+import pathlib
 
 
 def get_db():
@@ -22,11 +23,11 @@ def close_db(e=None):
 def init_db(app):
     with app.app_context():
         if not os.path.isfile(current_app.config["DATABASE"]):
-            with current_app.open_resource("DB/schema.sql") as f:
-                db = get_db()
-                db.cursor().executescript(f.read().decode("utf-8"))
-                db.commit()
-                db.cursor().close()
+            path = os.path.join(pathlib.Path(__file__).parent.absolute(), "schema.sql")
+            db = get_db()
+            db.cursor().executescript(open(path).read())
+            db.commit()
+            db.cursor().close()
 
 
 def register_db(app):
