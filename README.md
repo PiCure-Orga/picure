@@ -1,3 +1,7 @@
+[![Python package](https://github.com/mhupfauer/picure/actions/workflows/lint_and_install.yml/badge.svg?branch=master)](https://github.com/mhupfauer/picure/actions/workflows/lint_and_install.yml)
+[![Publish Python Package](https://github.com/mhupfauer/picure/actions/workflows/publish-wheel.yml/badge.svg)](https://github.com/mhupfauer/picure/actions/workflows/publish-wheel.yml)
+[![Docker](https://github.com/mhupfauer/picure/actions/workflows/docker-publish.yml/badge.svg)](https://github.com/mhupfauer/picure/actions/workflows/docker-publish.yml)
+
 # PiCure
 Dry ageing and curing with precision!
 
