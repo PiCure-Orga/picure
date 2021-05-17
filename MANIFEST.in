@@ -1,3 +1,4 @@
-graft core/DB
-graft core/templates
+graft core/*
+global-exclude *.pyc
+global-exclude *.sqlite
 include LICENSE.txt

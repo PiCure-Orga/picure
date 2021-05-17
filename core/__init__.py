@@ -2,6 +2,7 @@ import os
 from apscheduler.jobstores.sqlalchemy import SQLAlchemyJobStore
 from flask import Flask
 
+from core.API.loggerio import loggerio
 from core.API.state_control import control
 from core.Backend.Scheduler import scheduler
 from core.DB import db_handler
@@ -20,6 +21,7 @@ def create_app():
 
     db_handler.register_db(app)
     app.register_blueprint(control)
+    app.register_blueprint(loggerio)
     scheduler.init_app(app)
 
     with app.app_context():
