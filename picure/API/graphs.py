@@ -19,6 +19,7 @@ from markupsafe import escape
 
 graphs = Blueprint("graphs", __name__, template_folder="templates")
 
+
 @graphs.route("/graphs/<int:minute>")
 def get_main_page(minute):
     return render_template("data.html", minutes=minute)

@@ -65,4 +65,4 @@ class SensorMock(Sensor):
         pass
 
     def get_normalized_sensor_data(self, precision):
-        return round(random.randint(3,30), precision)
+        return round(random.randint(3, 30), precision)

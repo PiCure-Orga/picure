@@ -20,22 +20,22 @@ from dateutil import relativedelta
 import datetime
 import json
 
-data = json.loads(input('Paste output from /data/<sensor>/<minute>:'))
+data = json.loads(input("Paste output from /data/<sensor>/<minute>:"))
 seconds = [datetime.datetime.fromtimestamp(s[0]) for s in data]
 values = [s[2] for s in data]
 
 delta = relativedelta.relativedelta(max(seconds), min(seconds))
 locator = None
 
-if (delta.hours > 10):
+if delta.hours > 10:
     locator = mdates.HourLocator(interval=2)
-elif (5 < delta.hours <= 10):
+elif 5 < delta.hours <= 10:
     locator = mdates.HourLocator(interval=1)
-elif (delta.hours <= 5):
+elif delta.hours <= 5:
     locator = mdates.MinuteLocator(interval=30)
-elif (delta.hours <= 0 and delta.minutes > 30):
+elif delta.hours <= 0 and delta.minutes > 30:
     locator = mdates.MinuteLocator(interval=3)
-elif (delta.hours <= 0 and delta.minutes < 30):
+elif delta.hours <= 0 and delta.minutes < 30:
     locator = mdates.MinuteLocator(interval=1)
 
 plt.plot(seconds, values)
