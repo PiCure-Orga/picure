@@ -15,9 +15,10 @@
 #      along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 from flask import Blueprint, render_template
+from markupsafe import escape
 
 graphs = Blueprint("graphs", __name__, template_folder="templates")
 
-@graphs.route("/")
-def get_main_page():
-    return render_template("data.html")
+@graphs.route("/graphs/<int:minute>")
+def get_main_page(minute):
+    return render_template("data.html", minutes=minute)

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+<meta http-equiv="refresh" content="10">
 <script src="{{ url_for('static', filename='chart.min.js') }}"></script>
 <style>
 canvas{
@@ -12,7 +13,7 @@ canvas{
 <script>
     var request = new XMLHttpRequest();
     request.onreadystatechange = drawChart;
-    request.open("GET", "/data/SENSOR_TEMP/10");
+    request.open("GET", "/data/SENSOR_TEMP,SENSOR_HUMID/{{ minutes }}");
     request.send();
 
     function drawChart()
@@ -22,11 +23,21 @@ canvas{
                 var requested_json = JSON.parse(request.responseText);
                 var canvas = document.getElementById('chart');
 
-                var values = [];
+                var values_temp = [];
+                var values_humid = [];
                 var label = [];
 
-                requested_json.forEach(element => values.push( element[2] ))
-                requested_json.forEach(element => label.push( new Date(element[0]*1000).toTimeString().split(' ')[0] ))
+                requested_json.forEach(element => {
+                    if(element[1] == "SENSOR_HUMID")
+                    {
+                        values_humid.push( element[2]+70 )
+                        label.push( new Date(element[0]*1000).toTimeString().split(' ')[0] )
+                    }
+                    else if(element[1] == "SENSOR_TEMP")
+                    {
+                        values_temp.push( element[2] )
+                    }
+                });
 
                 var chart = new Chart(canvas, {
                     type: 'line',
@@ -36,7 +47,13 @@ canvas{
                             label: "Temp °C",
                             backgroundColor: 'rgb(255, 99, 132)',
                             borderColor: 'rgb(255, 99, 132)',
-                            data: values,
+                            data: values_temp,
+                        },
+                        {
+                            label: "Humid %-rH",
+                            backgroundColor: 'rgb(99,133,255)',
+                            borderColor: 'rgb(99,151,255)',
+                            data: values_humid
                         }]
                     },
                     config: {
@@ -55,7 +72,7 @@ canvas{
 </head>
 <body>
 <div>
-    <center><h2>Temperature over the last 10 minutes</h2></center>
+    <center><h2>Data over the last {{ minutes }} minutes</h2></center>
     <canvas id="chart"></canvas>
 </div>
 </body>
