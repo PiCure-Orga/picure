@@ -14,9 +14,9 @@
 #      You should have received a copy of the GNU General Public License
 #      along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-from core.Backend import config_reader
-from core.Backend.bases.base_hardware import Hardware
-from core.Backend.bases.base_sensor import Sensor
+from picure.Backend import config_reader
+from picure.Backend.bases.base_hardware import Hardware
+from picure.Backend.bases.base_sensor import Sensor
 
 installed_hardware = {}
 

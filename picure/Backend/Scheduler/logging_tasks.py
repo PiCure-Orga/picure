@@ -16,9 +16,9 @@
 
 import time
 
-from core.DB import db_handler
+from picure.DB import db_handler
 from . import scheduler
-from core.Backend.hardware_controller import get_all_sensor_data
+from picure.Backend.hardware_controller import get_all_sensor_data
 
 
 @scheduler.task(

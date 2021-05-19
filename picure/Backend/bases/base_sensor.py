@@ -14,6 +14,7 @@
 #      You should have received a copy of the GNU General Public License
 #      along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+
 class Sensor:
 
     DEV = None
@@ -33,25 +34,29 @@ class Sensor:
 
 
 class Sht1HumidityKd(Sensor):
-    path = "/sys/bus/i2c/devices/1-0070/hwmon/hwmon2/humidity1_input"
+    sensor = None
 
     def __init__(self):
-        pass
+        import board
+        import adafruit_shtc3
+
+        self.sensor = adafruit_shtc3.SHTC3(board.I2C())
 
     def get_normalized_sensor_data(self, precision):
-        raw = open(self.path, "r").read()
-        return round((100 * int(raw) / 65536), precision)
+        return round(self.sensor.measurements[1], precision)
 
 
 class Sht1TemperatureKd(Sensor):
-    path = "/sys/bus/i2c/devices/1-0070/hwmon/hwmon2/temp1_input"
+    sensor = None
 
     def __init__(self):
-        pass
+        import board
+        import adafruit_shtc3
+
+        self.sensor = adafruit_shtc3.SHTC3(board.I2C())
 
     def get_normalized_sensor_data(self, precision):
-        raw = open(self.path).read()
-        return round((175 * int(raw) / 65536 - 45), precision)
+        return round(self.sensor.measurements[0], precision)
 
 
 class SensorMock(Sensor):

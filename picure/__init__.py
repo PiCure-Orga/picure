@@ -18,10 +18,10 @@ import os
 from apscheduler.jobstores.sqlalchemy import SQLAlchemyJobStore
 from flask import Flask
 
-from core.API.loggerio import loggerio
-from core.API.state_control import control
-from core.Backend.Scheduler import scheduler
-from core.DB import db_handler
+from picure.API.loggerio import loggerio
+from picure.API.state_control import control
+from picure.Backend.Scheduler import scheduler
+from picure.DB import db_handler
 
 
 def create_app():
@@ -41,7 +41,7 @@ def create_app():
     scheduler.init_app(app)
 
     with app.app_context():
-        from core.Backend.Scheduler import logging_tasks
+        from picure.Backend.Scheduler import logging_tasks
 
         scheduler.start()
 

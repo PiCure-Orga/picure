@@ -1,4 +1,5 @@
-graft core/*
+graft picure/*
 global-exclude *.pyc
 global-exclude *.sqlite
 include LICENSE.txt
+include picure/config.yaml

@@ -24,10 +24,15 @@ CREATE TABLE latest_10_minutes(
     sensor TEXT,
     value DECIMAL(4,2)
 );
-
 CREATE TABLE latest_30_days(
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     timestamp INTEGER,
     sensor TEXT,
     value DECIMAL(4,2)
+);
+CREATE TABLE cure_program(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    duration INTEGER,
+    name TEXT,
+    comments TEXT
 );

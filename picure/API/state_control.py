@@ -15,13 +15,13 @@
 #      along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 from flask import Blueprint, request, abort
-from core.Backend import hardware_controller
+from picure.Backend import hardware_controller
 import json
 
 control = Blueprint("control", __name__, template_folder="templates")
 
 
-@control.route("/state/<dev>", methods=["GET"])
+@control.route("/state/<string:dev>", methods=["GET"])
 def get(dev):
     installed_hardware = hardware_controller.get_hardware_states()
     requested = dev.split(",")
@@ -35,7 +35,7 @@ def get(dev):
     return json.dumps(result)
 
 
-@control.route("/state/<dev>", methods=["POST"])
+@control.route("/state/<string:dev>", methods=["POST"])
 def post(dev):
     installed_hardware = hardware_controller.get_hardware_states()
     requested = dev.split(",")
