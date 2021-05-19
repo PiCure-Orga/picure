@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<script src="{{ url_for('static', filename='chart.min.js') }}"></script>
+<style>
+canvas{
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    width:80% !important;
+}
+</style>
+<script>
+    var request = new XMLHttpRequest();
+    request.onreadystatechange = drawChart;
+    request.open("GET", "/data/SENSOR_TEMP/10");
+    request.send();
+
+    function drawChart()
+    {
+        if (request.readyState === XMLHttpRequest.DONE) {
+            if (request.status === 200) {
+                var requested_json = JSON.parse(request.responseText);
+                var canvas = document.getElementById('chart');
+
+                var values = [];
+                var label = [];
+
+                requested_json.forEach(element => values.push( element[2] ))
+                requested_json.forEach(element => label.push( new Date(element[0]*1000).toTimeString().split(' ')[0] ))
+
+                var chart = new Chart(canvas, {
+                    type: 'line',
+                    data: {
+                        labels: label,
+                        datasets: [{
+                            label: "Temp °C",
+                            backgroundColor: 'rgb(255, 99, 132)',
+                            borderColor: 'rgb(255, 99, 132)',
+                            data: values,
+                        }]
+                    },
+                    config: {
+                        responsive: true,
+                        maintainAspectRatio: false
+                    }
+                });
+            }
+        }
+}
+
+</script>
+<head>
+    <meta charset="UTF-8">
+    <title>Charts</title>
+</head>
+<body>
+<div>
+    <center><h2>Temperature over the last 10 minutes</h2></center>
+    <canvas id="chart"></canvas>
+</div>
+</body>
+</html>

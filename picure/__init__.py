@@ -15,9 +15,12 @@
 #      along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import os
+import pathlib
+
 from apscheduler.jobstores.sqlalchemy import SQLAlchemyJobStore
 from flask import Flask
 
+from picure.API.graphs import graphs
 from picure.API.loggerio import loggerio
 from picure.API.state_control import control
 from picure.Backend.Scheduler import scheduler
@@ -34,10 +37,13 @@ def create_app():
         },
         SCHEDULER_API_ENABLED=False,
     )
+    app.static_folder = os.path.join(app.root_path, "static")
+    app.static_url_path = "/static"
 
     db_handler.register_db(app)
     app.register_blueprint(control)
     app.register_blueprint(loggerio)
+    app.register_blueprint(graphs)
     scheduler.init_app(app)
 
     with app.app_context():
