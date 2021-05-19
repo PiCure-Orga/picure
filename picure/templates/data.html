@@ -3,58 +3,63 @@
 <meta http-equiv="refresh" content="10">
 <script src="{{ url_for('static', filename='chart.min.js') }}"></script>
 <style>
-canvas{
-    display: block;
-    margin-left: auto;
-    margin-right: auto;
-    width:80% !important;
-}
+    canvas {
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+        width: 80% !important;
+    }
 </style>
 <script>
     var request = new XMLHttpRequest();
     request.onreadystatechange = drawChart;
-    request.open("GET", "/data/SENSOR_TEMP,SENSOR_HUMID/{{ minutes }}");
+    request.open("GET", "/data/{{ sensors }}/{{ minutes }}");
     request.send();
 
-    function drawChart()
-    {
+    function getRandomRgb() {
+        return 'rgb('+Math.floor(Math.random() * 255)+','+Math.floor(Math.random()*255)+','+Math.floor(Math.random()*255)+')'
+    }
+
+    function drawChart() {
         if (request.readyState === XMLHttpRequest.DONE) {
             if (request.status === 200) {
                 var requested_json = JSON.parse(request.responseText);
                 var canvas = document.getElementById('chart');
-
-                var values_temp = [];
-                var values_humid = [];
+                var sensors = "{{ sensors }}".split(",");
+                var all_sensor_data = [];
                 var label = [];
+                var first = true
 
-                requested_json.forEach(element => {
-                    if(element[1] == "SENSOR_HUMID")
-                    {
-                        values_humid.push( element[2]+70 )
-                        label.push( new Date(element[0]*1000).toTimeString().split(' ')[0] )
+                sensors.forEach(s => {
+                    var data = [];
+                    if (first) {
+                        requested_json.forEach(r => {
+                            if (r[1] === s) {
+                                data.push(r[2]);
+                                label.push(new Date(r[0]*1000).toTimeString().split(' ')[0]);
+                            }
+                        });
+                        first = false;
+                    } else {
+                        requested_json.forEach(r => {
+                            if (r[1] === s) {
+                                data.push(r[2]);
+                            }
+                        });
                     }
-                    else if(element[1] == "SENSOR_TEMP")
-                    {
-                        values_temp.push( element[2] )
-                    }
-                });
+                    all_sensor_data.push({
+                        data: data,
+                        label: s,
+                        borderColor: getRandomRgb()
+                    });
+                })
+
 
                 var chart = new Chart(canvas, {
                     type: 'line',
                     data: {
                         labels: label,
-                        datasets: [{
-                            label: "Temp °C",
-                            backgroundColor: 'rgb(255, 99, 132)',
-                            borderColor: 'rgb(255, 99, 132)',
-                            data: values_temp,
-                        },
-                        {
-                            label: "Humid %-rH",
-                            backgroundColor: 'rgb(99,133,255)',
-                            borderColor: 'rgb(99,151,255)',
-                            data: values_humid
-                        }]
+                        datasets: all_sensor_data
                     },
                     config: {
                         responsive: true,
@@ -63,7 +68,7 @@ canvas{
                 });
             }
         }
-}
+    }
 
 </script>
 <head>
