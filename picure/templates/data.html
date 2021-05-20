@@ -48,7 +48,7 @@
                         });
                     }
                     all_sensor_data.push({
-                        data: data,
+                        data: data.reverse(),
                         label: s,
                         borderColor: getRandomRgb()
                     });
@@ -58,7 +58,7 @@
                 var chart = new Chart(canvas, {
                     type: 'line',
                     data: {
-                        labels: label,
+                        labels: label.reverse(),
                         datasets: all_sensor_data
                     },
                     config: {

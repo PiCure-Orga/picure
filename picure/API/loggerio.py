@@ -52,20 +52,25 @@ def get_sensor_data(minutes, sensor):
     else:
         abort(500, "Valid minutes must not exceed integer range or be negative")
 
-    result = [(
-        db.cursor()
-        .execute(
-            "SELECT timestamp, sensor, value from {} where sensor in (?) order by id desc limit ?".format(db_name),
-            (s,minutes)
+    result = [
+        (
+            db.cursor()
+            .execute(
+                "SELECT timestamp, sensor, value from {} where sensor in (?) order by id desc limit ?".format(
+                    db_name
+                ),
+                (s, minutes),
+            )
+            .fetchall()
         )
-        .fetchall()
-    ) for s in sensor]
+        for s in sensor
+    ]
 
     to_return = []
 
     for res in result:
         for row in res:
-            to_return.append((row['timestamp'], row['sensor'], row['value']))
+            to_return.append((row["timestamp"], row["sensor"], row["value"]))
 
     return json.dumps(to_return)
 

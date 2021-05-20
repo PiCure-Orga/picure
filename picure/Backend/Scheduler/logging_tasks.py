@@ -70,8 +70,6 @@ def calculate_minute_avg():
         )
         db.cursor().close()
 
-        to_write = [(time.time(), d["sensor"], d["avg"]) for d in result]
-
         db = db_handler.get_db()
         db.cursor().execute(
             "DELETE FROM latest_30_days where id < "
@@ -80,6 +78,8 @@ def calculate_minute_avg():
         )
         db.commit()
         db.cursor().close()
+
+        to_write = [(time.time(), d["sensor"], d["avg"]) for d in result]
 
         db = db_handler.get_db()
         db.cursor().executemany(
