@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<meta http-equiv="refresh" content="10">
+<script src="{{ url_for('static', filename='chart.min.js') }}"></script>
+<style>
+    canvas {
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+        width: 80% !important;
+    }
+</style>
+<script>
+    var request = new XMLHttpRequest();
+    request.onreadystatechange = drawChart;
+    request.open("GET", "/data/{{ sensors }}/{{ minutes }}");
+    request.send();
+
+    function getRandomRgb() {
+        return 'rgb('+Math.floor(Math.random() * 255)+','+Math.floor(Math.random()*255)+','+Math.floor(Math.random()*255)+')'
+    }
+
+    function drawChart() {
+        if (request.readyState === XMLHttpRequest.DONE) {
+            if (request.status === 200) {
+                var requested_json = JSON.parse(request.responseText);
+                var canvas = document.getElementById('chart');
+                var sensors = "{{ sensors }}".split(",");
+                var all_sensor_data = [];
+                var label = [];
+                var first = true
+
+                sensors.forEach(s => {
+                    var data = [];
+                    if (first) {
+                        requested_json.forEach(r => {
+                            if (r[1] === s) {
+                                data.push(r[2]);
+                                label.push(new Date(r[0]*1000).toTimeString().split(' ')[0]);
+                            }
+                        });
+                        first = false;
+                    } else {
+                        requested_json.forEach(r => {
+                            if (r[1] === s) {
+                                data.push(r[2]);
+                            }
+                        });
+                    }
+                    all_sensor_data.push({
+                        data: data,
+                        label: s,
+                        borderColor: getRandomRgb()
+                    });
+                })
+
+
+                var chart = new Chart(canvas, {
+                    type: 'line',
+                    data: {
+                        labels: label,
+                        datasets: all_sensor_data
+                    },
+                    config: {
+                        responsive: true,
+                        maintainAspectRatio: false
+                    }
+                });
+            }
+        }
+    }
+
+</script>
+<head>
+    <meta charset="UTF-8">
+    <title>Charts</title>
+</head>
+<body>
+<div>
+    <center><h2>Data over the last {{ minutes }} minutes</h2></center>
+    <canvas id="chart"></canvas>
+</div>
+</body>
+</html>

@@ -13,6 +13,7 @@
 #
 #      You should have received a copy of the GNU General Public License
 #      along with this program.  If not, see <https://www.gnu.org/licenses/>.
+import random
 
 
 class Sensor:
@@ -64,4 +65,4 @@ class SensorMock(Sensor):
         pass
 
     def get_normalized_sensor_data(self, precision):
-        return round(1337.1337, precision)
+        return round(random.randint(3, 30), precision)
