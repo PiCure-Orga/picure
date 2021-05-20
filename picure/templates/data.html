@@ -16,7 +16,10 @@
     request.open("GET", "/data/{{ sensors }}/{{ minutes }}");
     request.send();
 
-    function getRandomRgb() {
+    function getColor(sensor) {
+        var color_params = new URLSearchParams(window.location.search);
+        if (color_params.get(sensor) != null)
+            return color_params.get(sensor)
         return 'rgb('+Math.floor(Math.random() * 255)+','+Math.floor(Math.random()*255)+','+Math.floor(Math.random()*255)+')'
     }
 
@@ -47,10 +50,12 @@
                             }
                         });
                     }
+                    var color;
+
                     all_sensor_data.push({
                         data: data.reverse(),
                         label: s,
-                        borderColor: getRandomRgb()
+                        borderColor: getColor(s)
                     });
                 })
 
