@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-<meta http-equiv="refresh" content="10">
 <script src="{{ url_for('static', filename='chart.min.js') }}"></script>
 <style>
     canvas {
@@ -11,16 +10,27 @@
     }
 </style>
 <script>
-    var request = new XMLHttpRequest();
-    request.onreadystatechange = drawChart;
-    request.open("GET", "/data/{{ sensors }}/{{ minutes }}");
-    request.send();
+    var request;
+    var chart;
+    var update = false;
+    function getData(){
+        request = new XMLHttpRequest();
+        request.onreadystatechange = drawChart;
+        request.open("GET", "/data/{{ sensors }}/{{ minutes }}");
+        request.send();
+    }
 
-    function getColor(sensor) {
-        var color_params = new URLSearchParams(window.location.search);
-        if (color_params.get(sensor) != null)
-            return color_params.get(sensor)
-        return 'rgb('+Math.floor(Math.random() * 255)+','+Math.floor(Math.random()*255)+','+Math.floor(Math.random()*255)+')'
+    function getParams(param) {
+        var params = new URLSearchParams(window.location.search);
+        if (params.get(param) != null)
+            return params.get(param)
+    }
+
+    function getColor(param) {
+        if (getParams(param)){
+            return getParams(param)
+        }
+        return 'rgb(' + Math.floor(Math.random() * 255) + ',' + Math.floor(Math.random() * 255) + ',' + Math.floor(Math.random() * 255) + ')'
     }
 
     function drawChart() {
@@ -31,7 +41,7 @@
                 var sensors = "{{ sensors }}".split(",");
                 var all_sensor_data = [];
                 var label = [];
-                var first = true
+                var first = true;
 
                 sensors.forEach(s => {
                     var data = [];
@@ -57,24 +67,39 @@
                         label: s,
                         borderColor: getColor(s)
                     });
-                })
-
-
-                var chart = new Chart(canvas, {
-                    type: 'line',
-                    data: {
-                        labels: label.reverse(),
-                        datasets: all_sensor_data
-                    },
-                    config: {
-                        responsive: true,
-                        maintainAspectRatio: false
-                    }
                 });
+
+                if (update) {
+                    chart.data.labels = label.reverse();
+                    chart.data.datasets.forEach( (dataset) => {
+                        dataset.data = []
+                        all_sensor_data.forEach(sd => {
+                            if(sd.label == dataset.label){
+                                dataset.data = (sd.data)
+                            }
+                        })
+                    });
+                    chart.update();
+                } else {
+                    chart = new Chart(canvas, {
+                        type: 'line',
+                        data: {
+                            labels: label.reverse(),
+                            datasets: all_sensor_data
+                        },
+                        config: {
+                            responsive: true,
+                            maintainAspectRatio: false
+                        }
+                    });
+                    update = true;
+                }
             }
         }
     }
 
+    getData()
+    window.setInterval(getData, getParams('refresh')??10000 )
 </script>
 <head>
     <meta charset="UTF-8">
