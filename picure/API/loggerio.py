@@ -39,11 +39,10 @@ loggerio = Blueprint("loggerio", __name__, template_folder="templates")
 def get_sensor_data(minutes, sensor):
     db = db_handler.get_db()
 
-    sensor = escape(sensor)
-    minutes = escape(minutes)
+    sensor = sensor.split(",")
+    minutes = minutes
 
-    sensors = " ".join('"{}",'.format(i) for i in sensor.split(","))[:-1]
-    minutes = int(minutes)
+    minutes = minutes
 
     if minutes > 10:
         db_name = "latest_30_days"
@@ -53,16 +52,22 @@ def get_sensor_data(minutes, sensor):
     else:
         abort(500, "Valid minutes must not exceed integer range or be negative")
 
-    # I fully understand that this is not a good idea. However passing the comma separated list of sensors
-    # escapes the required quotes and commas. There is escaping done above so this should be fine...
-    cmd = "SELECT timestamp, sensor, value from {} where sensor in ({}) order by id desc limit {}".format(
-        db_name, sensors, minutes
-    )
+    result = [(
+        db.cursor()
+        .execute(
+            "SELECT timestamp, sensor, value from {} where sensor in (?) order by id desc limit ?".format(db_name),
+            (s,minutes)
+        )
+        .fetchall()
+    ) for s in sensor]
 
-    result = db.cursor().execute(cmd).fetchall()
+    to_return = []
 
-    res = [(d["timestamp"], d["sensor"], d["value"]) for d in result]
-    return json.dumps(res)
+    for res in result:
+        for row in res:
+            to_return.append((row['timestamp'], row['sensor'], row['value']))
+
+    return json.dumps(to_return)
 
 
 @loggerio.route("/data/<string:sensor>", methods=["POST"])
