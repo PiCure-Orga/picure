@@ -29,12 +29,12 @@ jobs:
         python -m pip install --upgrade pip
         pip install pytest coverage flake8
         pip install -r requirements.txt
+    - name: Lint with flake8
+      run: flake8 picure
     - name: Install app
-      run: |
-        python setup.py install
+      run: python setup.py install
     - name: Run pytest
-      run: |
-        pytest tests
+      run: pytest tests
     - name: Run coverage
       run: |
         coverage run --include ./picure -m pytest

@@ -46,7 +46,7 @@ def create_app(test_config=None):
         scheduler.init_app(app)
 
         with app.app_context():
-            from picure.Backend.Scheduler import logging_tasks
+            from picure.Backend.Scheduler import logging_tasks  # noqa: F401
 
             scheduler.start()
 

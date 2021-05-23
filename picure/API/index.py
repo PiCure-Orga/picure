@@ -14,7 +14,7 @@
 #      You should have received a copy of the GNU General Public License
 #      along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-from flask import Blueprint, render_template
+from flask import Blueprint
 
 index = Blueprint("index", __name__, template_folder="templates")
 
