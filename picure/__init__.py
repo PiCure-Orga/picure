@@ -15,39 +15,39 @@
 #      along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import os
-
 from apscheduler.jobstores.sqlalchemy import SQLAlchemyJobStore
 from flask import Flask
-
-from picure.API.graphs import graphs
-from picure.API.loggerio import loggerio
-from picure.API.state_control import control
+from picure import API
 from picure.Backend.Scheduler import scheduler
 from picure.DB import db_handler
 
 
-def create_app():
+def create_app(test_config=None):
     app = Flask(__name__)
-    app.config.from_mapping(
-        SECRET_KEY="dev",
-        DATABASE=os.path.join(app.root_path, "DB/picure.sqlite"),
-        SCHEDULER_JOBSTORES={
-            "default": SQLAlchemyJobStore(url="sqlite:///jobs.sqlite")
-        },
-        SCHEDULER_API_ENABLED=False,
-    )
+    if test_config is None:
+        app.config.from_mapping(
+            SECRET_KEY="dev",
+            DATABASE=os.path.join(app.root_path, "DB/picure.sqlite"),
+            SCHEDULER_JOBSTORES={
+                "default": SQLAlchemyJobStore(url="sqlite:///jobs.sqlite")
+            },
+            SCHEDULER_API_ENABLED=False,
+        )
+    else:
+        app.config.from_mapping(test_config)
+
     app.static_folder = os.path.join(app.root_path, "static")
     app.static_url_path = "/static"
 
     db_handler.register_db(app)
-    app.register_blueprint(control)
-    app.register_blueprint(loggerio)
-    app.register_blueprint(graphs)
-    scheduler.init_app(app)
+    API.register_blueprints(app)
 
-    with app.app_context():
-        from picure.Backend.Scheduler import logging_tasks
+    if not app.config['TESTING']:
+        scheduler.init_app(app)
 
-        scheduler.start()
+        with app.app_context():
+            from picure.Backend.Scheduler import logging_tasks
+
+            scheduler.start()
 
     return app
