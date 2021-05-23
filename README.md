@@ -7,14 +7,17 @@
 Dry ageing and curing with precision!
 
 ## Current state of development
-Software has not yet reached alpha state. There is little to no functionality as of now.
+PiCure currently reads data from SHTC3 sensor, stores it and makes it accessible via varios ways.
+
+## Next steps
+The next step will be the implementation of the cure program logic, that enables an enduser to define several recepies for curing with steps defining values that should be reached. The user then sould be enabled to define events like `if SENSOR_TEMP is below CURE_PROGRAM_TARGET['TEMP'] - 5°C` that execut an action_set. Consisting of `name` and `actions` where each action referencing the `actor` (i.e. Hardware) and a `ActionTask` that defines the translation of the the `actors` state. (i.e. ActionState.SWITCH_OFF, ActionState.SWITCH_OF, ActionState.TOGGLE). A recurring programm will evaluate all events and execute their action_sets actions if their condition matches.
 
 ## Setup
 ### Development
 ```python -m flask run```
 
 ### Production
-```gunicorn picure:app```
+```gunicorn -w 2 -b 0.0.0.0:5000 "picure:create_app()"```
 
 ## License
 [GNU General Public License v3.0](https://github.com/mhupfauer/picure/blob/master/LICENSE.txt)
