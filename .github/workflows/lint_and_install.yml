@@ -43,6 +43,6 @@ jobs:
         pytest tests
     - name: Run coverage
       run: |
-        coverage run --include picure/* -m pytest
+        coverage run -m pytest
     - name: Upload to codecov
       uses: codecov/codecov-action@v1
