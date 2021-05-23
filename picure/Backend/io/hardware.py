@@ -54,7 +54,7 @@ class Hardware:
 
 
 class HardwareMock(HardwareProto):
-    state = "OFF"
+    state = False
 
     def __init__(self, pin, name):
         self.name = name

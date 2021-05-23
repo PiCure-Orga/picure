@@ -42,7 +42,7 @@ def create_app(test_config=None):
     db_handler.register_db(app)
     API.register_blueprints(app)
 
-    if not app.config['TESTING']:
+    if not app.config["TESTING"]:
         scheduler.init_app(app)
 
         with app.app_context():

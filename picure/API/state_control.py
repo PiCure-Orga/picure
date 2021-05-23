@@ -54,6 +54,6 @@ def post(dev):
     # Handling for switch, no need for sanity checking - we'll accept any value
     if "switch" in form_data:
         for device in requested:
-            installed_hardware[device] = not installed_hardware[device]
+            hardware_controller.get_hardware(dev).toggle()
 
     return get(dev)

@@ -20,7 +20,34 @@ def test_connection(app):
     with app.app_context():
         assert db_handler.get_db() is not None
 
+
+def test_insert(app):
+    with app.app_context():
+        db_handler.get_db().cursor().execute("DELETE from latest_30_days")
+        db_handler.get_db().commit()
+        db_handler.get_db().cursor().close()
+
+        db_handler.get_db().cursor().execute(
+            "INSERT into latest_30_days (timestamp, sensor, value) VALUES (?,?,?)",
+            (100, "TEST", 1337),
+        )
+        db_handler.get_db().commit()
+        db_handler.get_db().cursor().close()
+
+
 def test_select(app):
     with app.app_context():
-        result = db_handler.get_db().cursor().execute('SELECT id FROM latest_30_days limit 1').fetchall()
-        assert result[0]['id'] == 1
+        result = (
+            db_handler.get_db()
+            .cursor()
+            .execute("SELECT timestamp,sensor,value FROM latest_30_days")
+            .fetchall()
+        )
+        db_handler.get_db().cursor().close()
+
+        assert result[0]["timestamp"] == 100
+        assert result[0]["sensor"] == "TEST"
+        assert result[0]["value"] == 1337
+        assert len(result) == 1
+
+        db_handler.get_db().cursor().execute("DELETE FROM latest_30_days")

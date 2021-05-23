@@ -15,6 +15,7 @@
 #      along with this program.  If not, see <https://www.gnu.org/licenses/>.
 from . import graphs, loggerio, state_control, index
 
+
 def register_blueprints(app):
     app.register_blueprint(index.index)
     app.register_blueprint(state_control.control)
