@@ -16,9 +16,9 @@
 
 from flask import Blueprint, render_template
 
-graphs = Blueprint("graphs", __name__, template_folder="templates")
+index = Blueprint("index", __name__, template_folder="templates")
 
 
-@graphs.route("/graphs/<string:sensors>/<int:minute>")
-def get_main_page(sensors, minute):
-    return render_template("data.html", sensors=sensors, minutes=minute)
+@index.route("/")
+def get_main_page():
+    return "Ok"

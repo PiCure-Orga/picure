@@ -13,12 +13,37 @@
 #
 #      You should have received a copy of the GNU General Public License
 #      along with this program.  If not, see <https://www.gnu.org/licenses/>.
+from abc import ABC, abstractmethod
 
-from flask import Blueprint, render_template
+from picure.Backend.action_task import ActionTask
+from picure.Backend.io.prototypes.base import Base
 
-graphs = Blueprint("graphs", __name__, template_folder="templates")
 
+class HardwareProto(Base, ABC):
+    DEV = None
 
-@graphs.route("/graphs/<string:sensors>/<int:minute>")
-def get_main_page(sensors, minute):
-    return render_template("data.html", sensors=sensors, minutes=minute)
+    @abstractmethod
+    def __init__(self, pin, name):
+        pass
+
+    def execute(self, task: ActionTask):
+        if task == ActionTask.TOGGLE:
+            self.toggle()
+        elif task == ActionTask.SWITCH_ON:
+            self.on()
+        elif task == ActionTask.SWITCH_OFF:
+            self.off()
+        else:
+            raise Exception("Action not supported by this hardware!")
+
+    @abstractmethod
+    def on(self):
+        pass
+
+    @abstractmethod
+    def off(self):
+        pass
+
+    @abstractmethod
+    def toggle(self):
+        pass

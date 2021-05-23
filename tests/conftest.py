@@ -13,12 +13,31 @@
 #
 #      You should have received a copy of the GNU General Public License
 #      along with this program.  If not, see <https://www.gnu.org/licenses/>.
+import os
+import pathlib
 
-from flask import Blueprint, render_template
+import pytest
+from picure import create_app
 
-graphs = Blueprint("graphs", __name__, template_folder="templates")
+
+@pytest.fixture()
+def app():
+    return create_app(
+        {
+            "TESTING": True,
+            "DATABASE": os.path.join(
+                pathlib.Path(__file__).resolve().parent.parent,
+                "picure/DB/picure.sqlite",
+            ),
+        }
+    )
 
 
-@graphs.route("/graphs/<string:sensors>/<int:minute>")
-def get_main_page(sensors, minute):
-    return render_template("data.html", sensors=sensors, minutes=minute)
+@pytest.fixture()
+def client(app):
+    return app.test_client()
+
+
+@pytest.fixture()
+def runner(app):
+    return app.test_cli_runner()

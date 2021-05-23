@@ -13,12 +13,11 @@
 #
 #      You should have received a copy of the GNU General Public License
 #      along with this program.  If not, see <https://www.gnu.org/licenses/>.
-
-from flask import Blueprint, render_template
-
-graphs = Blueprint("graphs", __name__, template_folder="templates")
+from . import graphs, loggerio, state_control, index
 
 
-@graphs.route("/graphs/<string:sensors>/<int:minute>")
-def get_main_page(sensors, minute):
-    return render_template("data.html", sensors=sensors, minutes=minute)
+def register_blueprints(app):
+    app.register_blueprint(index.index)
+    app.register_blueprint(state_control.control)
+    app.register_blueprint(loggerio.loggerio)
+    app.register_blueprint(graphs.graphs)

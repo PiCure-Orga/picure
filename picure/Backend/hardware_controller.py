@@ -15,8 +15,8 @@
 #      along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 from picure.Backend import config_reader
-from picure.Backend.bases.base_hardware import Hardware
-from picure.Backend.bases.base_sensor import Sensor
+from picure.Backend.io.hardware import Hardware
+from picure.Backend.io.sensor import Sensor
 
 installed_hardware = {}
 
@@ -25,12 +25,17 @@ def setup_hardware():
     hw_config = config_reader.read_hardware_config()
     for hardware in hw_config.items():
         global installed_hardware
+
         if hardware[1].get("TYPE") == "Hardware":
             installed_hardware[hardware[0]] = Hardware(
-                hardware[1].get("GPIO"), hardware[1].get("HARDWARE_TYPE")
+                pin=hardware[1].get("GPIO"),
+                hardware=hardware[1].get("HARDWARE_TYPE"),
+                name=hardware[0],
             )
         elif hardware[1].get("TYPE") == "Sensor":
-            installed_hardware[hardware[0]] = Sensor(hardware[1].get("SENSOR_TYPE"))
+            installed_hardware[hardware[0]] = Sensor(
+                sensor_type=hardware[1].get("SENSOR_TYPE"), name=hardware[0]
+            )
         else:
             raise Exception(
                 "CONFIG Property '" + str(hardware[1].get("TYPE")) + "' not implemented"
@@ -41,25 +46,19 @@ def get_hardware_states():
     if len(installed_hardware) == 0:
         setup_hardware()
 
-    to_return = {}
-
-    for hardware in installed_hardware.items():
-        if isinstance(hardware[1], Sensor):
-            to_return[hardware[0]] = hardware[1].get_normalized_sensor_data()
-        if isinstance(hardware[1], Hardware):
-            to_return[hardware[0]] = hardware[1].get_state()
-
-    return to_return
+    return {hardware[0]: hardware[1].get() for hardware in installed_hardware.items()}
 
 
 def get_all_sensor_data():
     if len(installed_hardware) == 0:
         setup_hardware()
 
-    to_return = {}
+    return {
+        hardware[0]: hardware[1].get()
+        for hardware in installed_hardware.items()
+        if isinstance(hardware[1], Sensor)
+    }
 
-    for hardware in installed_hardware.items():
-        if isinstance(hardware[1], Sensor):
-            to_return[hardware[0]] = hardware[1].get_normalized_sensor_data()
 
-    return to_return
+def get_hardware(hardware):
+    return installed_hardware[hardware]
