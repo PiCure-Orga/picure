@@ -25,14 +25,8 @@ control = Blueprint("control", __name__, template_folder="templates")
 def get(dev):
     installed_hardware = hardware_controller.get_hardware_states()
     requested = dev.split(",")
-    result = []
-    for req in requested:
-        if req in installed_hardware:
-            result.append([req, installed_hardware.get(req)])
-        else:
-            result.append([req, "Not found"])
 
-    return json.dumps(result)
+    return json.dumps([[req, installed_hardware.get(req)] for req in requested])
 
 
 @control.route("/state/<string:dev>", methods=["POST"])
@@ -51,10 +45,11 @@ def post(dev):
 
     # State handling
     if "state" in form_data:
-        # Why not check for more than true... May come in handy sometime.
-        state = str(form_data["state"]).lower() in ("true", "yes", "on", "1")
         for device in requested:
-            installed_hardware[device] = state
+            if str(form_data["state"]).lower() in ("true", "yes", "on", "1"):
+                hardware_controller.get_hardware(dev).on()
+            else:
+                hardware_controller.get_hardware(dev).off()
 
     # Handling for switch, no need for sanity checking - we'll accept any value
     if "switch" in form_data:

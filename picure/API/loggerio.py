@@ -27,8 +27,7 @@
 #      You should have received a copy of the GNU General Public License
 #      along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-from flask import Blueprint, abort, request, escape
-from markupsafe import escape
+from flask import Blueprint, abort, request
 from picure.DB import db_handler
 import json
 
