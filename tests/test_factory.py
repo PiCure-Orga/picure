@@ -21,4 +21,4 @@ def test_config(app):
 
 def test_hello(client):
     response = client.get("/")
-    assert response.data == b"Ok"
+    assert response.status == "200 OK"
