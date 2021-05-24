@@ -24,17 +24,21 @@ control = Blueprint("control", __name__, template_folder="templates")
 @control.route("/state", methods=["GET"])
 def state():
     filter_param = request.args.get("FILTER")
+    nameonly_param = request.args.get("NAME_ONLY")
+    data = None
+    hw_states = hardware_controller.get_hardware_states()
+
     if filter_param is None:
-        return json.dumps(hardware_controller.get_hardware_states())
+        data = hw_states
+    else:
+        data = {
+            hw[0]: hw[1] for hw in hw_states.items() if re.match(filter_param, hw[0])
+        }
 
-    all_hw = hardware_controller.get_hardware_states()
+    if str(nameonly_param).lower() == "true":
+        data = [d[0] for d in data.items()]
 
-    filtered = [
-        [hw[0], hw[1]] for hw in all_hw.items() if re.match(filter_param, hw[0])
-    ]
-    if request.args.get("NAME_ONLY"):
-        return json.dumps([hw[0] for hw in filtered])
-    return json.dumps(filtered)
+    return json.dumps(data)
 
 
 @control.route("/state/<string:dev>", methods=["GET"])

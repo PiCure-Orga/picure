@@ -22,13 +22,14 @@ from picure import create_app
 
 @pytest.fixture()
 def app():
+    db_path = os.path.join(
+        pathlib.Path(__file__).resolve().parent.parent, "picure/DB/picure.sqlite"
+    )
+    os.remove(db_path)
     return create_app(
         {
             "TESTING": True,
-            "DATABASE": os.path.join(
-                pathlib.Path(__file__).resolve().parent.parent,
-                "picure/DB/picure.sqlite",
-            ),
+            "DATABASE": db_path,
         }
     )
 

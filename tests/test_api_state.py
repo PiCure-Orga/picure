@@ -71,3 +71,17 @@ def test_state_control_sanity_checking(client):
         client.post("/state/HEATING", data=dict(switch=0, state="Off")).status
         == "500 INTERNAL SERVER ERROR"
     )
+
+
+def test_state_endpoint(client):
+    assert (
+        client.get("/state?NAME_ONLY=True").data
+        == b'["HEATING", "UV", "SENSOR_TEMP", "SENSOR_HUMID"]'
+    )
+
+    assert (
+        client.get("/state?FILTER=^SENSOR_.*&NAME_ONLY=True").data
+        == b'["SENSOR_TEMP", "SENSOR_HUMID"]'
+    )
+
+    assert client.get("/state?FILTER=^SENSOR_.*").status == "200 OK"
