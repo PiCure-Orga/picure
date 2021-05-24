@@ -1,5 +1,4 @@
 [![Python package](https://github.com/mhupfauer/picure/actions/workflows/lint_and_install.yml/badge.svg?branch=master)](https://github.com/mhupfauer/picure/actions/workflows/lint_and_install.yml)
-[![Publish Python Package](https://github.com/mhupfauer/picure/actions/workflows/publish-wheel.yml/badge.svg)](https://github.com/mhupfauer/picure/actions/workflows/publish-wheel.yml)
 [![Docker](https://github.com/mhupfauer/picure/actions/workflows/docker-publish.yml/badge.svg)](https://github.com/mhupfauer/picure/actions/workflows/docker-publish.yml)
 [![codecov](https://codecov.io/gh/mhupfauer/picure/branch/master/graph/badge.svg?token=BERJVA1WKV)](https://codecov.io/gh/mhupfauer/picure)
 [![codestyle](https://img.shields.io/badge/code%20style-black-black)](https://github.com/psf/black#readme)
