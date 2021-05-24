@@ -16,7 +16,14 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-DROP TABLE IF EXISTS sensor_data;
+DROP TABLE IF EXISTS latest_30_days;
+DROP TABLE IF EXISTS latest_10_minutes;
+DROP TABLE IF EXISTS cure_program;
+DROP TABLE IF EXISTS cure_program_action_tasks;
+DROP TABLE IF EXISTS cure_program_actions;
+DROP TABLE IF EXISTS cure_program_step;
+DROP TABLE IF EXISTS cure_program_step_targets;
+
 
 CREATE TABLE latest_10_minutes(
     id INTEGER,
