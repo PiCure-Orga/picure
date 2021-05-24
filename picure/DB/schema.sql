@@ -19,20 +19,55 @@
 DROP TABLE IF EXISTS sensor_data;
 
 CREATE TABLE latest_10_minutes(
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    id INTEGER,
     timestamp INTEGER,
     sensor TEXT,
-    value DECIMAL(4,2)
+    value DECIMAL(4,2),
+    PRIMARY KEY (id)
 );
 CREATE TABLE latest_30_days(
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    id INTEGER,
     timestamp INTEGER,
     sensor TEXT,
-    value DECIMAL(4,2)
+    value DECIMAL(4,2),
+    PRIMARY KEY (id)
 );
 CREATE TABLE cure_program(
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    duration INTEGER,
+    id INTEGER,
     name TEXT,
-    comments TEXT
+    comments TEXT,
+    PRIMARY KEY (id)
+);
+CREATE TABLE cure_program_step(
+    id INTEGER,
+    cure_program_id INTEGER,
+    duration int NOT NULL,
+    name TEXT,
+    PRIMARY KEY (id),
+    FOREIGN KEY (cure_program_id) REFERENCES cure_program(id)
+);
+CREATE TABLE cure_program_step_targets(
+    id INTEGER,
+    cure_program_step_id INTEGER,
+    sensor TEXT NOT NULL,
+    target_value DECIMAL(4,2) NOT NULL,
+    PRIMARY KEY (id),
+    FOREIGN KEY (cure_program_step_id) REFERENCES cure_program_step(id)
+);
+CREATE TABLE cure_program_actions(
+    id INTEGER,
+    cure_program_id INTEGER,
+    sensor TEXT NOT NULL,
+    eval TEXT NOT NULL,
+    derivation DECIMAL(4,2) NOT NULL,
+    PRIMARY KEY (id),
+    FOREIGN KEY (cure_program_id) REFERENCES cure_program(id)
+);
+CREATE TABLE cure_program_action_tasks(
+    id INTEGER,
+    cure_program_action_id INTEGER,
+    hardware TEXT NOT NULL,
+    task_enum INTEGER NOT NULL,
+    PRIMARY KEY (id),
+    FOREIGN KEY (cure_program_action_id) REFERENCES cure_program_actions(id)
 );
