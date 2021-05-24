@@ -7,7 +7,7 @@
 Dry ageing and curing with precision!
 
 ## Current state of development
-PiCure currently reads data from SHTC3 sensor, stores it and makes it accessible via varios ways.
+PiCure currently reads data from SHTC3 sensor, stores it and makes it accessible in various ways.
 
 ## Next steps
 The next step will be the implementation of the cure program logic, that enables an enduser to define several recepies for curing with steps defining values that should be reached. The user then sould be enabled to define events like `if SENSOR_TEMP is below CURE_PROGRAM_TARGET['TEMP'] - 5°C` that execut an action_set. Consisting of `name` and `actions` where each action referencing the `actor` (i.e. Hardware) and a `ActionTask` that defines the translation of the the `actors` state. (i.e. ActionState.SWITCH_OFF, ActionState.SWITCH_OF, ActionState.TOGGLE). A recurring programm will evaluate all events and execute their action_sets actions if their condition matches.
