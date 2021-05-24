@@ -13,7 +13,7 @@
 #
 #      You should have received a copy of the GNU General Public License
 #      along with this program.  If not, see <https://www.gnu.org/licenses/>.
-
+import re
 from flask import Blueprint, request, abort
 from picure.Backend import hardware_controller
 import json
@@ -21,11 +21,26 @@ import json
 control = Blueprint("control", __name__, template_folder="templates")
 
 
+@control.route("/state", methods=["GET"])
+def state():
+    filter_param = request.args.get("FILTER")
+    if filter_param is None:
+        return json.dumps(hardware_controller.get_hardware_states())
+
+    all_hw = hardware_controller.get_hardware_states()
+
+    filtered = [
+        [hw[0], hw[1]] for hw in all_hw.items() if re.match(filter_param, hw[0])
+    ]
+    if request.args.get("NAME_ONLY"):
+        return json.dumps([hw[0] for hw in filtered])
+    return json.dumps(filtered)
+
+
 @control.route("/state/<string:dev>", methods=["GET"])
 def get(dev):
-    installed_hardware = hardware_controller.get_hardware_states()
     requested = dev.split(",")
-
+    installed_hardware = hardware_controller.get_hardware_states()
     return json.dumps([[req, installed_hardware.get(req)] for req in requested])
 
 

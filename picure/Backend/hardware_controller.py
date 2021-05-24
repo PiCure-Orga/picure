@@ -13,6 +13,7 @@
 #
 #      You should have received a copy of the GNU General Public License
 #      along with this program.  If not, see <https://www.gnu.org/licenses/>.
+from picure.Backend.io.prototypes.proto_sensor import SensorProto
 
 from picure.Backend import config_reader
 from picure.Backend.io.hardware import Hardware
@@ -56,7 +57,7 @@ def get_all_sensor_data():
     return {
         hardware[0]: hardware[1].get()
         for hardware in installed_hardware.items()
-        if isinstance(hardware[1], Sensor)
+        if issubclass(type(hardware[1]), SensorProto)
     }
 
 

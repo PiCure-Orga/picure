@@ -14,11 +14,12 @@
 #      You should have received a copy of the GNU General Public License
 #      along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-from flask import Blueprint
+from flask import Blueprint, render_template
+from picure.Backend.hardware_controller import get_hardware_states
 
 index = Blueprint("index", __name__, template_folder="templates")
 
 
 @index.route("/")
 def get_main_page():
-    return "Ok"
+    return render_template("index.html", states=get_hardware_states().items())

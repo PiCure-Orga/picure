@@ -64,4 +64,4 @@ class SensorMock(SensorProto):
         self.name = name
 
     def get(self, precision=4):
-        return round(random.randint(3, 30), precision)
+        return round(random.uniform(3.0, 30.50), precision)

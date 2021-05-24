@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+{% block title %}Home - PiCure {% endblock %}
+{% block head %}
+<script>
+    var sensor_req = new XMLHttpRequest()
+    sensor_req.onreadystatechange=handle_sensors
+    sensor_req.open("GET", '/state?FILTER=SENSOR.*&NAME_ONLY=True')
+    sensor_req.send()
+
+    function handle_sensors() {
+        if (sensor_req.readyState == XMLHttpRequest.DONE){
+            if (sensor_req.status == 200){
+                var sensors_to_query = JSON.parse(sensor_req.responseText)
+                var query_string = "/graphs/"
+                sensors_to_query.forEach(e => {
+                    query_string += e+","
+                })
+                query_string = query_string.slice(0,-1)+"/10"
+
+                var target_div = document.getElementById('graph_iframe')
+                var frame = document.createElement('iframe')
+                frame.setAttribute('src', query_string)
+                frame.setAttribute('width', '100%')
+                frame.setAttribute('height', '700px')
+                target_div.append(frame)
+            }
+        }
+    }
+</script>
+{% endblock %}
+{% block content %}
+    <div class="container-fluid p-4">
+        <div class="row">
+            <div class="col-xs-12 col-md-4">
+                <h2>Welcome to PiCure</h2>
+                <p>Please note this is still very much an alpha version. Use with caution!</p>
+                <p>You can check out the latest info over on <a href="https://github.com/mhupfauer/picure"
+                                                                target="_blank">GitHub</a>
+                </p>
+            </div>
+            <div class="col-xs-12 col-md-8">
+                <h3>Current states reported by PiCure</h3>
+                <table class="table table-striped">
+                    <thead>
+                    <tr>
+                        <td>Hardware/Sensor</td>
+                        <td>Value</td>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for hw in states %}
+                        <tr>
+                            <td>{{ hw[0] }}</td>
+                            <td>{{ hw[1] }}</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-12 mx-auto" id="graph_iframe">
+            </div>
+        </div>
+    </div>
+{% endblock %}
