@@ -32,6 +32,6 @@ from enum import Enum
 
 
 class ActionTask(Enum):
-    TOGGLE = (0,)
-    SWITCH_ON = (1,)
+    TOGGLE = 0
+    SWITCH_ON = 1
     SWITCH_OFF = 2

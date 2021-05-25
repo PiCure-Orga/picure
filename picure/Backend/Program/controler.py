@@ -40,9 +40,9 @@ def get_current_program():
         get_db()
         .cursor()
         .execute(
-            "SELECT id,name from program p join program_run pr on p.id = pr.program_id where pr.enabled = 1"
+            "SELECT p.id,p.name,pr.id from program p join program_run pr on p.id = pr.program_id where pr.enabled = 1"
         )
         .fetchall()
     )
     get_db().cursor().close()
-    return Program(res["id"], res["name"])
+    return Program(res["p.id"], res["pr.id"], res["p.name"])
