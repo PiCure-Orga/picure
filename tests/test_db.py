@@ -25,7 +25,7 @@ def test_insert(app):
     with app.app_context():
         db_handler.get_db().cursor().execute(
             "INSERT into latest_30_days (timestamp, sensor, value) VALUES (?,?,?)",
-            (100, "TEST", 1337)
+            (100, "TEST", 1337),
         )
         db_handler.get_db().commit()
         db_handler.get_db().cursor().close()

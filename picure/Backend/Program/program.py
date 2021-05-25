@@ -13,24 +13,34 @@
 #
 #      You should have received a copy of the GNU General Public License
 #      along with this program.  If not, see <https://www.gnu.org/licenses/>.
-import time
-
 from picure.DB.db_handler import get_db
+from picure.Backend.Program.event import Event
 
 
-def test_api_data(client, app):
-    with app.app_context():
+class Program:
+    db_id = None
+    name = None
+    events = []
 
-        get_db().cursor().execute(
-            "INSERT INTO latest_30_days (timestamp, sensor, value) VALUES (?,?,?)",
-            (123, "SENSOR_TEMP", 100),
-        )
-        get_db().commit()
-        get_db().cursor().close()
+    def __init__(self, id, name):
+        self.db_id = id
+        self.name = name
 
-        result = get_db().cursor().execute("SELECT * FROM latest_30_days").fetchall()
-        get_db().cursor().close()
+    def get_events(self):
+        if len(self.events == 0):
+            fetched = (
+                get_db()
+                .cursor()
+                .execute(
+                    "SELECT id,sensor,eval,derivation from event where program_id = ?",
+                    self.db_id,
+                )
+                .fetchall()
+            )
+            for f in fetched:
+                self.events.append(
+                    Event(f["id"], f["sensor"], f["eval"], f["derivation"])
+                )
+            get_db().cursor().close()
 
-    assert client.get("/data/SENSOR_TEMP/1").data == b"[]"
-    assert client.get("/data/SENSOR_TEMP/10").data == b"[]"
-    assert client.get("/data/SENSOR_TEMP/11").data == b'[[123, "SENSOR_TEMP", 100]]'
+        return self.events

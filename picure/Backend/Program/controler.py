@@ -13,24 +13,36 @@
 #
 #      You should have received a copy of the GNU General Public License
 #      along with this program.  If not, see <https://www.gnu.org/licenses/>.
-import time
 
 from picure.DB.db_handler import get_db
+from picure.Backend.Program.program import Program
 
 
-def test_api_data(client, app):
-    with app.app_context():
-
+def sanity_checks():
+    if len(
+        get_db()
+        .cursor()
+        .execute("SELECT id FROM program_run where enabled = 1")
+        .fetchall()
+        > 1
+    ):
         get_db().cursor().execute(
-            "INSERT INTO latest_30_days (timestamp, sensor, value) VALUES (?,?,?)",
-            (123, "SENSOR_TEMP", 100),
+            "UPDATE program_run SET enabled = 0 where enabled = 1"
         )
         get_db().commit()
         get_db().cursor().close()
+        raise Exception("No more than one program can be enabled at a time!")
 
-        result = get_db().cursor().execute("SELECT * FROM latest_30_days").fetchall()
-        get_db().cursor().close()
 
-    assert client.get("/data/SENSOR_TEMP/1").data == b"[]"
-    assert client.get("/data/SENSOR_TEMP/10").data == b"[]"
-    assert client.get("/data/SENSOR_TEMP/11").data == b'[[123, "SENSOR_TEMP", 100]]'
+def get_current_program():
+    sanity_checks()
+    res = (
+        get_db()
+        .cursor()
+        .execute(
+            "SELECT id,name from program p join program_run pr on p.id = pr.program_id where pr.enabled = 1"
+        )
+        .fetchall()
+    )
+    get_db().cursor().close()
+    return Program(res["id"], res["name"])
