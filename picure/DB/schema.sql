@@ -18,11 +18,14 @@
 
 DROP TABLE IF EXISTS latest_30_days;
 DROP TABLE IF EXISTS latest_10_minutes;
-DROP TABLE IF EXISTS cure_program;
-DROP TABLE IF EXISTS cure_program_action_tasks;
-DROP TABLE IF EXISTS cure_program_actions;
-DROP TABLE IF EXISTS cure_program_step;
-DROP TABLE IF EXISTS cure_program_step_targets;
+DROP TABLE IF EXISTS program;
+DROP TABLE IF EXISTS step;
+DROP TABLE IF EXISTS target;
+DROP TABLE IF EXISTS event;
+DROP TABLE IF EXISTS task;
+DROP TABLE IF EXISTS program_run;
+DROP TABLE IF EXISTS event_log;
+DROP TABLE IF EXISTS step_log;
 
 
 CREATE TABLE latest_10_minutes(
@@ -39,42 +42,71 @@ CREATE TABLE latest_30_days(
     value DECIMAL(4,2),
     PRIMARY KEY (id)
 );
-CREATE TABLE cure_program(
+CREATE TABLE program(
     id INTEGER,
     name TEXT,
     comments TEXT,
     PRIMARY KEY (id)
 );
-CREATE TABLE cure_program_step(
+CREATE TABLE event(
     id INTEGER,
-    cure_program_id INTEGER,
-    duration int NOT NULL,
+    program_id INTEGER,
     name TEXT,
+    sensor TEXT,
+    eval TEXT,
+    derivation DECIMAL(4,2),
     PRIMARY KEY (id),
-    FOREIGN KEY (cure_program_id) REFERENCES cure_program(id)
+    FOREIGN KEY (program_id) REFERENCES program(id)
 );
-CREATE TABLE cure_program_step_targets(
+CREATE TABLE task(
     id INTEGER,
-    cure_program_step_id INTEGER,
-    sensor TEXT NOT NULL,
-    target_value DECIMAL(4,2) NOT NULL,
+    event_id INTEGER,
+    name TEXT,
+    hardware TEXT,
+    action INTEGER,
+    duration INTEGER,
     PRIMARY KEY (id),
-    FOREIGN KEY (cure_program_step_id) REFERENCES cure_program_step(id)
+    FOREIGN KEY (event_id) REFERENCES event(id)
 );
-CREATE TABLE cure_program_actions(
+CREATE TABLE step(
     id INTEGER,
-    cure_program_id INTEGER,
-    sensor TEXT NOT NULL,
-    eval TEXT NOT NULL,
-    derivation DECIMAL(4,2) NOT NULL,
+    program_id INTEGER,
+    duration INTEGER,
+    step_order INTEGER,
     PRIMARY KEY (id),
-    FOREIGN KEY (cure_program_id) REFERENCES cure_program(id)
+    FOREIGN KEY (program_id) REFERENCES program(id)
 );
-CREATE TABLE cure_program_action_tasks(
+CREATE TABLE target(
     id INTEGER,
-    cure_program_action_id INTEGER,
-    hardware TEXT NOT NULL,
-    task_enum INTEGER NOT NULL,
+    step_id INTEGER,
+    sensor TEXT,
+    value DECIMAL(4,2),
     PRIMARY KEY (id),
-    FOREIGN KEY (cure_program_action_id) REFERENCES cure_program_actions(id)
+    FOREIGN KEY (step_id) REFERENCES step(id)
+);
+CREATE TABLE program_run(
+    id INTEGER,
+    enabled INTEGER,
+    paused INTEGER,
+    start_timestamp INTEGER,
+    pause_timestamp INTEGER,
+    PRIMARY KEY (id)
+);
+CREATE TABLE event_log(
+    id INTEGER,
+    program_run_id INTEGER,
+    timestamp INTEGER,
+    event_id INTEGER,
+    PRIMARY KEY (id),
+    FOREIGN KEY (program_run_id) REFERENCES program_run(id),
+    FOREIGN KEY (event_id) REFERENCES event(id)
+);
+CREATE TABLE step_log(
+    id INTEGER,
+    program_run_id INTEGER,
+    timestamp INTEGER,
+    step_id INTEGER,
+    PRIMARY KEY (id),
+    FOREIGN KEY (program_run_id) REFERENCES program_run(id),
+    FOREIGN KEY (step_id) REFERENCES step(id)
 );
