@@ -33,8 +33,8 @@ class Event:
         self.evaluation = evaluation
         self.derivation = derivation
         self.program = program
-        self.target = program.get_current_targets().get(self.sensor.name)
-        print(self.target)
+        self.target = program.get_current_targets().get(self.sensor.name) or None
+
 
     def check(self):
         expr = (

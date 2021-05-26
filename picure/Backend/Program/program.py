@@ -56,7 +56,7 @@ class Program:
                 get_db()
                 .cursor()
                 .execute(
-                    "SELECT id, duration FROM step where program_id = :program_id order by step_order desc",
+                    "SELECT id, duration FROM step where program_id = :program_id order by step_order asc",
                     {"program_id": self.program_id},
                 )
                 .fetchall()
@@ -96,7 +96,5 @@ class Program:
             if step_time_in <= passed:
                 step_time_in += t[0]
                 step += 1
-            else:
-                break
 
-        return self.targets[step-1][1]
+        return self.targets[step - 1][1]
