@@ -20,6 +20,9 @@ from abc import ABC, abstractmethod
 class Base(ABC):
     name = None
 
+    def get_name(self):
+        return self.name
+
     @abstractmethod
     def get(self):
         pass

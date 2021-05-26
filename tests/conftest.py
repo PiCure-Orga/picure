@@ -23,7 +23,8 @@ from picure import create_app
 @pytest.fixture()
 def app():
     db_path = os.path.join(
-        pathlib.Path(__file__).resolve().parent.parent, "picure/DB/picure.sqlite"
+        pathlib.Path(__file__).resolve().parent.parent,
+        "picure/Backend/DB/picure.sqlite",
     )
     if os.path.isfile(db_path):
         os.remove(db_path)

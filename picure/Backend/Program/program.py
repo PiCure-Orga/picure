@@ -15,9 +15,8 @@
 #      along with this program.  If not, see <https://www.gnu.org/licenses/>.
 import time
 
-from picure.DB.db_handler import get_db
+from picure.Backend.DB.db_handler import get_db
 from picure.Backend.Program.event import Event
-from datetime import datetime
 
 
 class Program:
@@ -33,66 +32,71 @@ class Program:
         self.name = name
 
     def get_events(self):
-        if len(self.events == 0):
+        if len(self.events) == 0:
             fetched = (
                 get_db()
                 .cursor()
                 .execute(
-                    "SELECT id,sensor,eval,derivation from event where program_id = ?",
-                    self.program_id,
+                    "SELECT id, sensor, eval, derivation from event where program_id = :program_id",
+                    {"program_id": self.program_id},
                 )
                 .fetchall()
             )
             for f in fetched:
                 self.events.append(
-                    Event(f["id"], f["sensor"], f["eval"], f["derivation"])
+                    Event(f["id"], f["sensor"], f["eval"], f["derivation"], self)
                 )
             get_db().cursor().close()
 
         return self.events
 
     def get_step_targets(self):
-        if len(self.targets == 0):
-            fetched = (
+        if len(self.targets) == 0:
+            steps = (
                 get_db()
                 .cursor()
                 .execute(
-                    "SELECT * FROM step where program_id = ? order by step_order desc",
-                    self.program_id,
+                    "SELECT id, duration FROM step where program_id = :program_id order by step_order desc",
+                    {"program_id": self.program_id},
                 )
                 .fetchall()
             )
-            for f in fetched:
-                fetch = (
+
+            for s in steps:
+                targets = (
                     get_db()
                     .cursor()
-                    .execute("SELECT * FROM target where step_id = ?", f["id"])
+                    .execute(
+                        "SELECT sensor, value FROM target where step_id = :step_id",
+                        {"step_id": s["id"]},
+                    )
                     .fetchall()
                 )
-                targets = {t["sensor"]: t["value"] for t in targets}
-                self.targets.append((f["duration"], targets))
+                target = {t["sensor"]: t["value"] for t in targets}
+                self.targets.append( (s["duration"], target) )
 
         return self.targets
 
-    def get_current_step(self):
+    def get_current_targets(self):
         start = (
             get_db()
             .cursor()
             .execute(
-                "SELECT start_timestamp from program_run where id = ?", self.run_id
+                "SELECT start_timestamp from program_run where id = :id",
+                {"id": self.run_id},
             )
-            .fetchall()["start_timestamp"]
+            .fetchall()
         )
-        passed = time.time() - start
+        passed = time.time() - start[0]["start_timestamp"]
 
         step_time_in = 0
         step = 0
 
         for t in self.get_step_targets():
             if step_time_in <= passed:
-                step_time_in += t[1]
+                step_time_in += t[0]
                 step += 1
             else:
                 break
 
-        return self.targets.index(step - 1)
+        return self.targets[step-1][1]

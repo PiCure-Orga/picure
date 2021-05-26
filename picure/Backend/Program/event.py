@@ -14,23 +14,27 @@
 #      You should have received a copy of the GNU General Public License
 #      along with this program.  If not, see <https://www.gnu.org/licenses/>.
 from picure.Backend.hardware_controller import get_hardware
-from picure.DB.db_handler import get_db
+from picure.Backend.DB.db_handler import get_db
 from picure.Backend.Program.task import Task
 
 
 class Event:
     db_id = None
+    program = None
     sensor = None
     evaluation = None
     derivation = None
     target = None
     tasks = []
 
-    def __init__(self, id, sensor, evaluation, derivation):
+    def __init__(self, id, sensor, evaluation, derivation, program):
         self.db_id = id
         self.sensor = get_hardware(sensor)
         self.evaluation = evaluation
         self.derivation = derivation
+        self.program = program
+        self.target = program.get_current_targets().get(self.sensor.name)
+        print(self.target)
 
     def check(self):
         expr = (

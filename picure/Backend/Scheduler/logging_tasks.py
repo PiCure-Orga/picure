@@ -16,7 +16,7 @@
 
 import time
 
-from picure.DB import db_handler
+from ..DB import db_handler
 from . import scheduler
 from picure.Backend.hardware_controller import get_all_sensor_data
 

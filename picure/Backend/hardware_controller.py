@@ -62,4 +62,6 @@ def get_all_sensor_data():
 
 
 def get_hardware(hardware):
+    if len(installed_hardware) == 0:
+        setup_hardware()
     return installed_hardware[hardware]
