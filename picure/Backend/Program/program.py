@@ -63,7 +63,7 @@ class Program:
             )
 
             for s in steps:
-                targets = (
+                db_targets = (
                     get_db()
                     .cursor()
                     .execute(
@@ -72,8 +72,8 @@ class Program:
                     )
                     .fetchall()
                 )
-                target = {t["sensor"]: t["value"] for t in targets}
-                self.targets.append((s["duration"], target))
+                targets = {t["sensor"]: t["value"] for t in db_targets}
+                self.targets.append((s["duration"], targets))
 
         return self.targets
 

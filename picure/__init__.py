@@ -45,18 +45,12 @@ def create_app(test_config=None):
 
     if not app.config["TESTING"]:
         scheduler = Scheduler()
-        scheduler.scheduler.init_app(app)
+        scheduler.init_app(app)
 
         with app.app_context():
             import picure.Backend.Scheduler.logging_tasks  # noqa: F401
+            import picure.Backend.Scheduler.program_tasks  # noqa: F401
 
             scheduler.scheduler.start()
-
-    with app.app_context():
-        program = controler.get_current_program()
-        events = program.get_events()
-
-        for e in events:
-            e.check()
 
     return app

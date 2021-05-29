@@ -19,6 +19,7 @@ from picure.Backend.Scheduler import Scheduler
 from picure.Backend.hardware_controller import get_hardware
 from picure.Backend.action_task import ActionTask
 
+
 class Task:
     id = None
     name = None
@@ -36,12 +37,19 @@ class Task:
     def exec(self):
         self.hardware.execute(self.action)
         if self.duration != 0:
-            scheduler = Scheduler().scheduler
-            scheduler.add_job(func=self.handle_duration, trigger='date', run_date=datetime.fromtimestamp(time.time() + self.duration), id='Test' )
+            scheduler = Scheduler()
+            scheduler.add_job(
+                func=self.handle_duration,
+                trigger="date",
+                run_date=datetime.fromtimestamp(time.time() + self.duration),
+                id=self.name,
+            )
 
     def handle_duration(self):
         print("APScheduler hit")
         if self.action == ActionTask.SWITCH_OFF:
             self.hardware.on()
+        elif self.action == ActionTask.TOGGLE:
+            self.action.toggle()
         else:
             self.hardware.off()

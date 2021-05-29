@@ -20,7 +20,6 @@ from picure.Backend.Program.task import Task
 
 class Event:
     db_id = None
-    program = None
     sensor = None
     evaluation = None
     derivation = None
@@ -32,7 +31,6 @@ class Event:
         self.sensor = get_hardware(sensor)
         self.evaluation = evaluation
         self.derivation = derivation
-        self.program = program
         self.target = program.get_current_targets().get(self.sensor.name) or None
 
     def check(self):

@@ -13,16 +13,20 @@
 #
 #      You should have received a copy of the GNU General Public License
 #      along with this program.  If not, see <https://www.gnu.org/licenses/>.
+from picure.Backend.Scheduler import Scheduler
+from picure.Backend.Program import controler
 
-from flask_apscheduler import APScheduler
+scheduler = Scheduler()
 
 
-class Scheduler(object):
-    scheduler = None
-    __instance = None
-
-    def __new__(cls, *args, **kwargs):
-        if cls.__instance is None:
-            cls.__instance = super(Scheduler, cls).__new__(cls)
-            cls.__instance.scheduler = APScheduler()
-        return cls.__instance.scheduler
+@scheduler.task(
+    "interval",
+    id="Program_Event_Loop",
+    seconds=10,
+    max_instances=1,
+    start_date="2000-01-01 12:19:00",
+)
+def validate_events():
+    events = controler.get_current_program().get_events()
+    for e in events:
+        e.exec()
