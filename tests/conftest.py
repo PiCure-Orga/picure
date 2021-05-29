@@ -23,7 +23,8 @@ from picure import create_app
 @pytest.fixture()
 def app():
     db_path = os.path.join(
-        pathlib.Path(__file__).resolve().parent.parent, "picure/DB/picure.sqlite"
+        pathlib.Path(__file__).resolve().parent.parent,
+        "picure/Backend/DB/picure.sqlite",
     )
     if os.path.isfile(db_path):
         os.remove(db_path)
@@ -44,3 +45,25 @@ def client(app):
 @pytest.fixture()
 def runner(app):
     return app.test_cli_runner()
+
+
+@pytest.fixture()
+def program(app):
+    insert_path = os.path.join(
+        pathlib.Path(__file__).resolve().parent,
+        "program_db_inserts"
+    )
+
+    with app.app_context():
+        for file in [f for f in os.listdir(insert_path) if f.endswith('.sql')]:
+            from picure.Backend.DB.db_handler import get_db
+
+            file_path = os.path.join(insert_path, file)
+
+            get_db().cursor().executescript(open(file_path).read())
+            get_db().commit()
+            get_db().cursor().close()
+
+        from picure.Backend.Program.controler import get_current_program
+
+        return get_current_program()

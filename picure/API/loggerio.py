@@ -28,7 +28,7 @@
 #      along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 from flask import Blueprint, abort, request
-from picure.DB import db_handler
+from picure.Backend.DB import db_handler
 import json
 
 loggerio = Blueprint("loggerio", __name__, template_folder="templates")

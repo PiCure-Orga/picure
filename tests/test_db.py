@@ -13,7 +13,7 @@
 #
 #      You should have received a copy of the GNU General Public License
 #      along with this program.  If not, see <https://www.gnu.org/licenses/>.
-from picure.DB import db_handler
+from picure.Backend.DB import db_handler
 
 
 def test_connection(app):
@@ -25,7 +25,7 @@ def test_insert(app):
     with app.app_context():
         db_handler.get_db().cursor().execute(
             "INSERT into latest_30_days (timestamp, sensor, value) VALUES (?,?,?)",
-            (100, "TEST", 1337)
+            (100, "TEST", 1337),
         )
         db_handler.get_db().commit()
         db_handler.get_db().cursor().close()

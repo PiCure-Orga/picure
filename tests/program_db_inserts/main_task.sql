@@ -1,0 +1,1 @@
+INSERT INTO task (id, event_id, name, hardware, action, duration) VALUES (1, 1, 'HEAT ON', 'HEATING', 1, 100000);

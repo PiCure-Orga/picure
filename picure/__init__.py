@@ -18,8 +18,8 @@ import os
 from apscheduler.jobstores.sqlalchemy import SQLAlchemyJobStore
 from flask import Flask
 from picure import API
-from picure.Backend.Scheduler import scheduler
-from picure.DB import db_handler
+from picure.Backend.Scheduler import Scheduler
+from picure.Backend.DB import db_handler
 
 
 def create_app(test_config=None):
@@ -27,7 +27,7 @@ def create_app(test_config=None):
     if test_config is None:
         app.config.from_mapping(
             SECRET_KEY="dev",
-            DATABASE=os.path.join(app.root_path, "DB/picure.sqlite"),
+            DATABASE=os.path.join(app.root_path, "Backend/DB/picure.sqlite"),
             SCHEDULER_JOBSTORES={
                 "default": SQLAlchemyJobStore(url="sqlite:///jobs.sqlite")
             },
@@ -43,11 +43,13 @@ def create_app(test_config=None):
     API.register_blueprints(app)
 
     if not app.config["TESTING"]:
+        scheduler = Scheduler()
         scheduler.init_app(app)
 
         with app.app_context():
-            from picure.Backend.Scheduler import logging_tasks  # noqa: F401
+            import picure.Backend.Scheduler.logging_tasks  # noqa: F401
+            import picure.Backend.Scheduler.program_tasks  # noqa: F401
 
-            scheduler.start()
+            scheduler.scheduler.start()
 
     return app

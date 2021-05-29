@@ -16,23 +16,4 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-DROP TABLE IF EXISTS sensor_data;
-
-CREATE TABLE latest_10_minutes(
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    timestamp INTEGER,
-    sensor TEXT,
-    value DECIMAL(4,2)
-);
-CREATE TABLE latest_30_days(
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    timestamp INTEGER,
-    sensor TEXT,
-    value DECIMAL(4,2)
-);
-CREATE TABLE cure_program(
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    duration INTEGER,
-    name TEXT,
-    comments TEXT
-);
+INSERT INTO program_run (program_id, enabled, start_timestamp) VALUES (1, 1, (strftime('%s', 'now')))

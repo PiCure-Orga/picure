@@ -15,21 +15,38 @@
 #      along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 from picure.Backend.DB.db_handler import get_db
+from picure.Backend.Program.program import Program
 
 
-def test_api_data(client, app):
-    with app.app_context():
+def sanity_checks():
+    res = (
+        get_db()
+        .cursor()
+        .execute("SELECT id FROM program_run where enabled = 1")
+        .fetchall()
+    )
 
+    if len(res) > 1:
         get_db().cursor().execute(
-            "INSERT INTO latest_30_days (timestamp, sensor, value) VALUES (?,?,?)",
-            (123, "SENSOR_TEMP", 100),
+            "UPDATE program_run SET enabled = 0 where enabled = 1"
         )
         get_db().commit()
         get_db().cursor().close()
+        return False
+    return True
 
-        result = get_db().cursor().execute("SELECT * FROM latest_30_days").fetchall()
-        get_db().cursor().close()
 
-    assert client.get("/data/SENSOR_TEMP/1").data == b"[]"
-    assert client.get("/data/SENSOR_TEMP/10").data == b"[]"
-    assert client.get("/data/SENSOR_TEMP/11").data == b'[[123, "SENSOR_TEMP", 100]]'
+def get_current_program():
+    if not sanity_checks():
+        return 0
+
+    res = (
+        get_db()
+        .cursor()
+        .execute(
+            "SELECT p.id,pr.id,p.name from program p join program_run pr on p.id = pr.program_id where pr.enabled = 1"
+        )
+        .fetchall()
+    )
+    get_db().cursor().close()
+    return Program(res[0][0], res[0][1], res[0][2])

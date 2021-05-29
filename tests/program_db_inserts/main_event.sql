@@ -1,0 +1,1 @@
+INSERT INTO event (id, program_id, name, sensor, eval, derivation) VALUES (1, 1, 'TEMP < TARGET -2', 'SENSOR_TEMP', '<', -2.00);
