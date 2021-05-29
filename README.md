@@ -9,8 +9,14 @@ Dry ageing and curing with precision!
 ## Current state of development
 PiCure currently reads data from SHTC3 sensor, stores it and makes it accessible in various ways.
 
+The system can read generalized programs from the database. A program consists of one or multiple steps each containting target values that sensor should have during the
+duration of a step. A program further contains events (i.e.: `if SENSOR_TEMP >/</== CURRENT_PROGRAM_STEP_TARGET['TEMP'] - 5°C`) that query a sensors value and validate it
+based on a logical expression (also stored inside the database) against the target value for that sensor. If the expression validates to `True` all associated tasks of this
+event will be executed. Each task can either switch on/off or toggle a `Hardware` (i.e.: `COOLING SWTICH.ON`). Further there is support for a duration in milliseconds after
+which the action is inverted. These events will be validated every 10 seconds. Durations can be lower though.
+
 ## Next steps
-The next step will be the implementation of the cure program logic, that enables an enduser to define several recepies for curing with steps defining values that should be reached. The user then sould be enabled to define events like `if SENSOR_TEMP is below CURE_PROGRAM_TARGET['TEMP'] - 5°C` that execut an action_set. Consisting of `name` and `actions` where each action referencing the `actor` (i.e. Hardware) and a `ActionTask` that defines the translation of the the `actors` state. (i.e. ActionState.SWITCH_OFF, ActionState.SWITCH_OF, ActionState.TOGGLE). A recurring programm will evaluate all events and execute their action_sets actions if their condition matches.
+A users should be able to create a program via the web ui
 
 ## Setup
 ### Development
