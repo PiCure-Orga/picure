@@ -16,14 +16,13 @@
 
 from flask_apscheduler import APScheduler
 
-_scheduler = None
 
+class Scheduler(object):
+    scheduler = None
+    __instance = None
 
-def get_scheduler():
-    global _scheduler
-    if _scheduler is None:
-        _scheduler = APScheduler()
-    return _scheduler
-
-
-scheduler = get_scheduler()
+    def __new__(cls, *args, **kwargs):
+        if cls.__instance is None:
+            cls.__instance = super(Scheduler, cls).__new__(cls)
+            cls.__instance.scheduler = APScheduler()
+        return cls.__instance

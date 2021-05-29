@@ -18,7 +18,7 @@ import os
 from apscheduler.jobstores.sqlalchemy import SQLAlchemyJobStore
 from flask import Flask
 from picure import API
-from picure.Backend.Scheduler import scheduler
+from picure.Backend.Scheduler import Scheduler
 from picure.Backend.DB import db_handler
 from picure.Backend.Program import controler
 
@@ -43,16 +43,20 @@ def create_app(test_config=None):
     db_handler.register_db(app)
     API.register_blueprints(app)
 
-    with app.app_context():
-        program = controler.get_current_program()
-        program.get_events()
-
     if not app.config["TESTING"]:
-        scheduler.init_app(app)
+        scheduler = Scheduler()
+        scheduler.scheduler.init_app(app)
 
         with app.app_context():
-            from picure.Backend.Scheduler import logging_tasks  # noqa: F401
+            import picure.Backend.Scheduler.logging_tasks  # noqa: F401
 
-            scheduler.start()
+            scheduler.scheduler.start()
+
+    with app.app_context():
+        program = controler.get_current_program()
+        events = program.get_events()
+
+        for e in events:
+            e.check()
 
     return app

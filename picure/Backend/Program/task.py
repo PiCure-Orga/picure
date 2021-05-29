@@ -13,12 +13,11 @@
 #
 #      You should have received a copy of the GNU General Public License
 #      along with this program.  If not, see <https://www.gnu.org/licenses/>.
+from datetime import datetime
+import time
+from picure.Backend.Scheduler import Scheduler
 from picure.Backend.hardware_controller import get_hardware
 from picure.Backend.action_task import ActionTask
-from flask_apscheduler.scheduler import APScheduler
-from time import time
-from datetime import datetime
-
 
 class Task:
     id = None
@@ -30,20 +29,18 @@ class Task:
     def __init__(self, id, name, hardware, action, duration):
         self.id = id
         self.name = name
-        self.hardware = get_hardware(hardware)[1]
+        self.hardware = get_hardware(hardware)
         self.action = ActionTask(action)
         self.duration = duration
 
     def exec(self):
         self.hardware.execute(self.action)
         if self.duration != 0:
-            APScheduler.add_job(
-                self.handle_duration,
-                "date",
-                datetime.fromtimestamp(time.time() + self.duration),
-            )
+            scheduler = Scheduler().scheduler
+            scheduler.add_job(func=self.handle_duration, trigger='date', run_date=datetime.fromtimestamp(time.time() + self.duration), id='Test' )
 
     def handle_duration(self):
+        print("APScheduler hit")
         if self.action == ActionTask.SWITCH_OFF:
             self.hardware.on()
         else:

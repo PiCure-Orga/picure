@@ -73,7 +73,7 @@ class Program:
                     .fetchall()
                 )
                 target = {t["sensor"]: t["value"] for t in targets}
-                self.targets.append( (s["duration"], target) )
+                self.targets.append((s["duration"], target))
 
         return self.targets
 

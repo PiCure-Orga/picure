@@ -35,10 +35,9 @@ class Event:
         self.program = program
         self.target = program.get_current_targets().get(self.sensor.name) or None
 
-
     def check(self):
         expr = (
-            str(self.sensor)
+            str(self.sensor.get())
             + str(self.evaluation)
             + "("
             + str(self.target)
@@ -58,8 +57,8 @@ class Event:
                 get_db()
                 .cursor()
                 .execute(
-                    "SELECT id,name,hardware,action,duration from task where event_id = ?",
-                    self.db_id,
+                    "SELECT id,name,hardware,action,duration from task where event_id = :event_id",
+                    {"event_id": self.db_id},
                 )
                 .fetchall()
             )
