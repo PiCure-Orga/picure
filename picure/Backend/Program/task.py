@@ -46,7 +46,6 @@ class Task:
             )
 
     def handle_duration(self):
-        print("APScheduler hit")
         if self.action == ActionTask.SWITCH_OFF:
             self.hardware.on()
         elif self.action == ActionTask.TOGGLE:

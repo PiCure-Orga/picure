@@ -1,0 +1,1 @@
+INSERT INTO step (id, program_id, duration, step_order) VALUES (1, 1, 200, 1);

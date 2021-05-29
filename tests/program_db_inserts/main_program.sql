@@ -1,0 +1,1 @@
+INSERT INTO program (id, name, comments) VALUES (1, 'TEST', null);
