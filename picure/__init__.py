@@ -20,7 +20,6 @@ from flask import Flask
 from picure import API
 from picure.Backend.Scheduler import Scheduler
 from picure.Backend.DB import db_handler
-from picure.Backend.Program import controler
 
 
 def create_app(test_config=None):
