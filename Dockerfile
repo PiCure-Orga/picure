@@ -1,7 +1,4 @@
 FROM python:3.9-alpine
-ENV FLASK_APP "core/__init__.py"
-ENV FLASK_ENV "production"
-ENV FLASK_DEBUG 0
 
 COPY / /var/www
 
