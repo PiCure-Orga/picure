@@ -38,12 +38,13 @@ class Task:
         self.hardware.execute(self.action)
         if self.duration != 0:
             scheduler = Scheduler()
-            scheduler.add_job(
-                func=self.handle_duration,
-                trigger="date",
-                run_date=datetime.fromtimestamp(time.time() + self.duration),
-                id=self.name,
-            )
+            if not self.name in [f.id for f in scheduler.get_jobs()]:
+                scheduler.add_job(
+                    func=self.handle_duration,
+                    trigger="date",
+                    run_date=datetime.fromtimestamp(time.time() + self.duration),
+                    id=self.name,
+                )
 
     def handle_duration(self):
         if self.action == ActionTask.SWITCH_OFF:

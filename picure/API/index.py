@@ -23,3 +23,7 @@ index = Blueprint("index", __name__, template_folder="templates")
 @index.route("/")
 def get_main_page():
     return render_template("index.html", states=get_hardware_states().items())
+
+@index.route("/program")
+def get_program_page():
+    return render_template("program.html")

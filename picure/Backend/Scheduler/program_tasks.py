@@ -27,6 +27,7 @@ scheduler = Scheduler()
     start_date="2000-01-01 12:19:00",
 )
 def validate_events():
-    events = controler.get_current_program().get_events()
-    for e in events:
-        e.exec()
+    with scheduler.app.app_context():
+        events = controler.get_current_program().get_events()
+        for e in events:
+            e.check()
