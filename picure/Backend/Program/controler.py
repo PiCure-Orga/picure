@@ -36,6 +36,14 @@ def sanity_checks():
     return True
 
 
+def get_list_of_programs():
+    if not sanity_checks():
+        return 0
+
+    res = get_db().cursor().execute("SELECT id,name from program").fetchall()
+    return [Program(r["id"], 0, r["name"]) for r in res]
+
+
 def get_current_program():
     if not sanity_checks():
         return 0
@@ -49,4 +57,8 @@ def get_current_program():
         .fetchall()
     )
     get_db().cursor().close()
+    if len(res) == 0:
+        raise Exception(
+            "Tried to get current program when no program is running. Enable a program."
+        )
     return Program(res[0][0], res[0][1], res[0][2])

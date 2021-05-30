@@ -16,6 +16,7 @@
 
 from flask import Blueprint, render_template
 from picure.Backend.hardware_controller import get_hardware_states
+from picure.Backend.Program.controler import get_list_of_programs
 
 index = Blueprint("index", __name__, template_folder="templates")
 
@@ -24,6 +25,7 @@ index = Blueprint("index", __name__, template_folder="templates")
 def get_main_page():
     return render_template("index.html", states=get_hardware_states().items())
 
+
 @index.route("/program")
 def get_program_page():
-    return render_template("program.html")
+    return render_template("program.html", program=get_list_of_programs())

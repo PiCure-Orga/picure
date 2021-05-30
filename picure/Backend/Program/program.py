@@ -50,17 +50,20 @@ class Program:
 
         return self.events
 
+    def get_steps(self):
+        return (
+            get_db()
+            .cursor()
+            .execute(
+                "SELECT id, duration FROM step where program_id = :program_id order by step_order asc",
+                {"program_id": self.program_id},
+            )
+            .fetchall()
+        )
+
     def get_step_targets(self):
         if len(self.targets) == 0:
-            steps = (
-                get_db()
-                .cursor()
-                .execute(
-                    "SELECT id, duration FROM step where program_id = :program_id order by step_order asc",
-                    {"program_id": self.program_id},
-                )
-                .fetchall()
-            )
+            steps = self.get_steps()
 
             for s in steps:
                 db_targets = (
@@ -78,6 +81,8 @@ class Program:
         return self.targets
 
     def get_current_targets(self):
+        if self.run_id == 0:
+            return None
         start = (
             get_db()
             .cursor()

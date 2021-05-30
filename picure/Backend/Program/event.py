@@ -26,8 +26,8 @@ class Event:
     target = None
     tasks = []
 
-    def __init__(self, id, sensor, evaluation, derivation, program):
-        self.db_id = id
+    def __init__(self, db_id, sensor, evaluation, derivation, program):
+        self.db_id = db_id
         self.sensor = get_hardware(sensor)
         self.evaluation = evaluation
         self.derivation = derivation

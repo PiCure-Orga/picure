@@ -26,8 +26,8 @@ def test_program(app, program):
         assert len(program.get_events()) == 1
         assert program.name == "TEST"
 
-        assert (program.get_step_targets()[0][1])['SENSOR_TEMP'] == 100
-        assert (program.get_step_targets()[0][1])['SENSOR_HUMID'] == 100
+        assert (program.get_step_targets()[0][1])["SENSOR_TEMP"] == 100
+        assert (program.get_step_targets()[0][1])["SENSOR_HUMID"] == 100
 
         for e in program.get_events():
             assert len(e.get_tasks()) == 1
@@ -37,10 +37,10 @@ def test_program(app, program):
             assert len(Scheduler().get_jobs()) == 1
 
 
-
-
 def test_sanity_check(app, program):
     with app.app_context():
-        get_db().cursor().execute("INSERT INTO program_run (program_id, enabled) VALUES (1, 1)")
+        get_db().cursor().execute(
+            "INSERT INTO program_run (program_id, enabled) VALUES (1, 1)"
+        )
         assert controler.get_current_program() == 0
         assert controler.sanity_checks() == True

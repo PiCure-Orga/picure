@@ -50,12 +50,11 @@ def runner(app):
 @pytest.fixture()
 def program(app):
     insert_path = os.path.join(
-        pathlib.Path(__file__).resolve().parent,
-        "program_db_inserts"
+        pathlib.Path(__file__).resolve().parent, "program_db_inserts"
     )
 
     with app.app_context():
-        for file in [f for f in os.listdir(insert_path) if f.endswith('.sql')]:
+        for file in [f for f in os.listdir(insert_path) if f.endswith(".sql")]:
             from picure.Backend.DB.db_handler import get_db
 
             file_path = os.path.join(insert_path, file)
