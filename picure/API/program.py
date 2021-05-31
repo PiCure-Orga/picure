@@ -14,7 +14,7 @@
 #      You should have received a copy of the GNU General Public License
 #      along with this program.  If not, see <https://www.gnu.org/licenses/>.
 import json
-from flask import Blueprint, request
+from flask import Blueprint, request, Response
 from picure.Backend.Program import controler
 from picure.Backend.DB.db_handler import get_db
 
@@ -31,8 +31,18 @@ def get_programs():
 @program.route("/api/program", methods=["POST"])
 def new_program():
     form_data = request.form.to_dict()
-    if "program_name" in form_data:
-        get_db().cursor().execute("INSERT INTO program (name) VALUES (:program_name)", form_data )
-        get_db().commit()
-        get_db().cursor().close()
-    return get_programs()
+    if "ProgramName" in form_data:
+        db = get_db()
+        db.cursor().execute("INSERT INTO program (name) VALUES (:ProgramName)", form_data )
+        db.commit()
+        db.cursor().close()
+    return Response(response="No Content", status=204)
+
+
+@program.route("/api/program/<string:prog_id>", methods=["DELETE"])
+def delete_program(prog_id):
+    db = get_db()
+    db.cursor().execute('DELETE from program where id = ?', (prog_id,) )
+    db.commit()
+    db.cursor().close()
+    return "Ok"

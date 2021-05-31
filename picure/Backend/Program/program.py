@@ -37,8 +37,8 @@ class Program:
                 get_db()
                 .cursor()
                 .execute(
-                    "SELECT id, sensor, eval, derivation from event where program_id = :program_id",
-                    {"program_id": self.program_id},
+                    "SELECT id, sensor, eval, derivation from event where program_id = ?",
+                    (self.program_id,),
                 )
                 .fetchall()
             )
@@ -55,8 +55,8 @@ class Program:
             get_db()
             .cursor()
             .execute(
-                "SELECT id, duration FROM step where program_id = :program_id order by step_order asc",
-                {"program_id": self.program_id},
+                "SELECT id, duration FROM step where program_id = ? order by step_order asc",
+                (self.program_id,),
             )
             .fetchall()
         )
@@ -70,8 +70,8 @@ class Program:
                     get_db()
                     .cursor()
                     .execute(
-                        "SELECT sensor, value FROM target where step_id = :step_id",
-                        {"step_id": s["id"]},
+                        "SELECT sensor, value FROM target where step_id = ?",
+                        (s["id"],),
                     )
                     .fetchall()
                 )
@@ -87,8 +87,8 @@ class Program:
             get_db()
             .cursor()
             .execute(
-                "SELECT start_timestamp from program_run where id = :id",
-                {"id": self.run_id},
+                "SELECT start_timestamp from program_run where id = ?",
+                (self.run_id,),
             )
             .fetchall()
         )

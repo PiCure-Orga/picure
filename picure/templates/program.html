@@ -2,6 +2,18 @@
 {% block title %}Program - PiCure {% endblock %}
 {% block head %}
 <script src="{{ url_for('static', filename='jquery-3.6.0.min.js') }}"></script>
+<script>
+function delete_prog(prog_id) {
+    req = new XMLHttpRequest()
+    req.open("DELETE", "/api/program/"+prog_id, true)
+    req.onload = function () {
+        if(req.readyState == req.DONE && req.status == "200"){
+            console.log("DELETED program with id: "+prog_id)
+        }
+    }
+    req.send()
+}
+</script>
 {% endblock %}
 {% block content %}
 <div class="container p-4">
@@ -11,13 +23,13 @@
     </div>
     <div class="row collapse mt-4" id="add-new-form">
         <h3>Create a new program</h3>
-        <form method="post">
+        <form action="/api/program" method="post">
             <div class="row mt-4 align-items-center">
                 <div class="col-2">
                     <label for="program-name" class="form-label">Program name:</label>
                 </div>
                 <div class="col-10">
-                    <input type="text" class="form-control" id="program-name" name="program-name" aria-describedby="program-name-help">
+                    <input type="text" class="form-control" id="program-name" name="ProgramName" aria-describedby="program-name-help">
                 </div>
             </div>
             <div class="row">
@@ -28,7 +40,7 @@
             </div>
             <div class="row">
                 <div class="col-12">
-                    <button type="submit" class="btn btn-primary float-end">Add</button>
+                    <button type="submit" class="btn btn-primary float-end reload-btn-custom">Add</button>
                 </div>
             </div>
         </form>
@@ -50,7 +62,10 @@
                         <td>{{ p.program_id }}</td>
                         <td>{{ p.name }}</td>
                         <td>{{ p.get_steps()|length }}</td>
-                        <td><button type="button" class="btn btn-primary">Edit</button></td>
+                        <td>
+                            <button type="button" class="btn btn-primary">Edit</button>
+                            <button type="button" class="btn btn-danger reload-btn-custom" onclick="delete_prog({{ p.program_id }})">Delete</button>
+                        </td>
                     </tr>
                 {% endfor %}
                 </tbody>
@@ -58,4 +73,14 @@
         </div>
     </div>
 </div>
+<script>
+var btns = document.getElementsByClassName("reload-btn-custom")
+Array.from(btns).forEach(function (e) {
+  e.addEventListener('click', function () {
+        setTimeout(function () {
+            window.location.reload()
+        }, 100)
+    }, false)
+})
+</script>
 {% endblock %}

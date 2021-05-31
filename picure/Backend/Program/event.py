@@ -56,7 +56,7 @@ class Event:
                 .cursor()
                 .execute(
                     "SELECT id,name,hardware,action,duration from task where event_id = :event_id",
-                    {"event_id": self.db_id},
+                    (self.db_id,),
                 )
                 .fetchall()
             )
