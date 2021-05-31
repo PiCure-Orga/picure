@@ -21,7 +21,7 @@ import json
 control = Blueprint("control", __name__, template_folder="templates")
 
 
-@control.route("/state", methods=["GET"])
+@control.route("/api/state", methods=["GET"])
 def state():
     filter_param = request.args.get("FILTER")
     nameonly_param = request.args.get("NAME_ONLY")
@@ -41,14 +41,14 @@ def state():
     return json.dumps(data)
 
 
-@control.route("/state/<string:dev>", methods=["GET"])
+@control.route("/api/state/<string:dev>", methods=["GET"])
 def get(dev):
     requested = dev.split(",")
     installed_hardware = hardware_controller.get_hardware_states()
     return json.dumps([[req, installed_hardware.get(req)] for req in requested])
 
 
-@control.route("/state/<string:dev>", methods=["POST"])
+@control.route("/api/state/<string:dev>", methods=["POST"])
 def post(dev):
     installed_hardware = hardware_controller.get_hardware_states()
     requested = dev.split(",")

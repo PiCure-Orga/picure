@@ -34,7 +34,7 @@ import json
 loggerio = Blueprint("loggerio", __name__, template_folder="templates")
 
 
-@loggerio.route("/data/<string:sensor>/<int:minutes>", methods=["GET"])
+@loggerio.route("/api/data/<string:sensor>/<int:minutes>", methods=["GET"])
 def get_sensor_data(minutes, sensor):
     db = db_handler.get_db()
 
@@ -74,7 +74,7 @@ def get_sensor_data(minutes, sensor):
     return json.dumps(to_return)
 
 
-@loggerio.route("/data/<string:sensor>", methods=["POST"])
+@loggerio.route("/api/data/<string:sensor>", methods=["POST"])
 def insert_sensor_data(sensor):
     to_insert = request.form.to_dict()
 

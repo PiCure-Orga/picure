@@ -16,7 +16,7 @@
     function getData(){
         request = new XMLHttpRequest();
         request.onreadystatechange = drawChart;
-        request.open("GET", "/data/{{ sensors }}/{{ minutes }}");
+        request.open("GET", "/api/data/{{ sensors }}/{{ minutes }}");
         request.send();
     }
 
