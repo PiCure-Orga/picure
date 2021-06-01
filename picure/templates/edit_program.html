@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+{% block title %}Edit Program - PiCure {% endblock %}
+{% block head %}
+
+{% endblock %}
+{% block content %}
+<div class="container">
+    <form>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <td>Step ID</td>
+                    <td>Duration</td>
+                    <td>Sensor targets</td>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>
+                        1
+                    </td>
+                    <td>
+                        <div class="row">
+                            <div class="col-10">
+                                <input id="step-1-duration" type="text" class="form-control">
+                                <div class="form-text">Duration</div>
+                            </div>
+                            <div class="col-2">
+                                <input id="step-1-duration-unit" type="text" class="form-control">
+                                <div class="form-text">s/m/h/d</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="row">
+                            <div class="col-7">
+                                <input id="SENSOR-NAME-1" type="text" class="form-control">
+                            </div>
+                            <div class="col-4">
+                                <input id="SENSOR-VALUE-1" type="text" class="form-control">
+                            </div>
+                            <div class="col-1">
+                                <button class="btn btn-primary">+</button>
+                            </div>
+                        </div>
+                        <div class="row mt-2">
+                            <div class="col-7">
+                                <input id="SENSOR-NAME-2" type="text" class="form-control">
+                            </div>
+                            <div class="col-4">
+                                <input id="SENSOR-VALUE-2" type="text" class="form-control">
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </form>
+    <div class="row">
+        <div class="col">
+            <button class="btn btn-primary float-end">Add new step</button>
+        </div>
+    </div>
+</div>
+{% endblock %}

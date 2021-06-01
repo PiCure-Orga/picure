@@ -26,8 +26,8 @@ program = Blueprint("program", __name__, template_folder="templates")
 @program.route("/api/program", methods=["GET"])
 def get_programs():
     progs = [
-        {"id": t.program_id, "name": t.name, "steps": len(t.get_steps())}
-        for t in controler.get_list_of_programs()
+        {"id": t[1].program_id, "name": t[1].name, "steps": len(t[1].get_steps())}
+        for t in controler.get_dict_of_programs()
     ]
     return json.dumps(progs)
 
@@ -61,3 +61,12 @@ def delete_program(prog_id):
     db.commit()
     db.cursor().close()
     return "Ok"
+
+@program.route("/api/program/<int:prog_id>", methods=['GET'])
+def get_program(prog_id):
+    programs = controler.get_dict_of_programs()
+    if prog_id not in programs:
+        abort(500, "Program not found")
+
+    steps = programs[prog_id].get_step_targets()
+    return json.dumps(steps)

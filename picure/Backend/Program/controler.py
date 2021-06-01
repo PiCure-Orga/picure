@@ -35,13 +35,12 @@ def sanity_checks():
         return False
     return True
 
-
-def get_list_of_programs():
+def get_dict_of_programs():
     if not sanity_checks():
         return 0
 
     res = get_db().cursor().execute("SELECT id,name from program").fetchall()
-    return [Program(r["id"], 0, r["name"]) for r in res]
+    return {r["id"]: Program(r["id"], 0, r["name"]) for r in res}
 
 
 def get_current_program():
