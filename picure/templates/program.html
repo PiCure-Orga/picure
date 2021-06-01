@@ -3,16 +3,33 @@
 {% block head %}
 <script src="{{ url_for('static', filename='jquery-3.6.0.min.js') }}"></script>
 <script>
+function delayed_reload(){
+    setTimeout(function () {
+        window.location.reload()
+    }, 100)
+}
+
 function delete_prog(prog_id) {
     req = new XMLHttpRequest()
     req.open("DELETE", "/api/program/"+prog_id, true)
     req.onload = function () {
-        if(req.readyState == req.DONE && req.status == "200"){
-            console.log("DELETED program with id: "+prog_id)
+        if(req.readyState == req.DONE){
+            if(req.status == "200"){
+                delayed_reload()
+                console.log("DELETED program with id: "+prog_id)
+            }
+            if(req.status == "500"){
+                var box = document.getElementById("alertbox")
+                box.innerText = 'Warning: Can`t delete program. Its probably running at the moment.'
+                new bootstrap.Collapse(box, {
+                    show: true
+                })
+            }
         }
     }
     req.send()
 }
+
 </script>
 {% endblock %}
 {% block content %}
@@ -40,7 +57,7 @@ function delete_prog(prog_id) {
             </div>
             <div class="row">
                 <div class="col-12">
-                    <button type="submit" class="btn btn-primary float-end reload-btn-custom">Add</button>
+                    <button id="add-btn" type="submit" class="btn btn-primary float-end">Add</button>
                 </div>
             </div>
         </form>
@@ -64,7 +81,7 @@ function delete_prog(prog_id) {
                         <td>{{ p.get_steps()|length }}</td>
                         <td>
                             <button type="button" class="btn btn-primary">Edit</button>
-                            <button type="button" class="btn btn-danger reload-btn-custom" onclick="delete_prog({{ p.program_id }})">Delete</button>
+                            <button type="button" class="btn btn-danger" onclick="delete_prog({{ p.program_id }})">Delete</button>
                         </td>
                     </tr>
                 {% endfor %}
@@ -74,13 +91,6 @@ function delete_prog(prog_id) {
     </div>
 </div>
 <script>
-var btns = document.getElementsByClassName("reload-btn-custom")
-Array.from(btns).forEach(function (e) {
-  e.addEventListener('click', function () {
-        setTimeout(function () {
-            window.location.reload()
-        }, 100)
-    }, false)
-})
+document.getElementById('add-btn').addEventListener('click', delayed_reload, false)
 </script>
 {% endblock %}
