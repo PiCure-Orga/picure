@@ -107,4 +107,58 @@ def delete_step(prog_id, step_id):
     )
     get_db().commit()
     get_db().cursor().close()
-    return Response(response="Deleted step " + str(step_id) + "from program " + str(prog_id), status=204)
+    return Response(
+        response="Deleted step " + str(step_id) + "from program " + str(prog_id),
+        status=204,
+    )
+
+
+@program.route("/api/program/<int:prog_id>/step/<int:step_id>/target", methods=["GET"])
+def get_steps(prog_id, step_id):
+    targets = controler.get_dict_of_programs()[prog_id].get_step_targets()
+    target = [t for t in targets if t[0] == step_id][0]
+
+    return json.dumps(target[2])
+
+
+@program.route("/api/program/<int:prog_id>/step/<int:step_id>/target", methods=["POST"])
+def new_step(prog_id, step_id):
+    form = request.form.to_dict()
+    if not ("sensor" in form and "value" in form and len(form) == 2):
+        abort(500, "Malformed request")
+
+    allready_present = (
+        get_db()
+        .cursor()
+        .execute(
+            "SELECT sum(id) as count FROM target where step_id = :step_id and sensor = :sensor",
+            {"step_id": step_id, "sensor": form["sensor"].upper()},
+        )
+        .fetchone()["count"]
+    )
+    if allready_present:
+        abort(500, "Sensor cant have multiple targets at once")
+
+    get_db().cursor().execute(
+        "INSERT INTO target (step_id, sensor, value) VALUES (:step_id, :sensor, :value)",
+        {"step_id": step_id, "sensor": form["sensor"], "value": form["value"]},
+    )
+
+    get_db().commit()
+    get_db().cursor().close()
+
+    return Response(response="Target created", status=204)
+
+
+@program.route(
+    "/api/program/<int:prog_id>/step/<int:step_id>/target/<sensor>", methods=["DELETE"]
+)
+def delete_target(prog_id, step_id, sensor):
+    get_db().cursor().execute(
+        "DELETE from target where step_id = :step_id and sensor = :sensor",
+        {"step_id": step_id, "sensor": sensor},
+    )
+    get_db().commit()
+    get_db().cursor().close()
+
+    return Response(response="Deleted step", status=204)

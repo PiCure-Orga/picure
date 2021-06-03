@@ -70,18 +70,17 @@
                     '</div>'
             }
 
-            actions_cell.innerHTML = '<button type="button" class="btn btn-primary">Edit</button> ' +
+            actions_cell.innerHTML = '<button type="button" class="btn btn-primary" onclick=\'location.href="'+"/program/"+current_prog_id+"/step/"+data[i][0]+'"\'>Edit</button> ' +
                 '<button type=button class="btn btn-danger" onclick="delete_prog('+data[i][0]+')">X</button>'
         }
     }
 
-    var steps
     req = new XMLHttpRequest()
     req.open("GET", "/api/program/"+current_prog_id)
     req.onreadystatechange = function () {
             if(req.readyState == req.DONE){
                 if(req.status == "200"){
-                    steps = JSON.parse(req.responseText)
+                    var steps = JSON.parse(req.responseText)
                     add_tbl_elements_from_json(steps)
                 }
             }
