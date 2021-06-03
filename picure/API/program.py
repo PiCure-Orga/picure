@@ -14,8 +14,6 @@
 #      You should have received a copy of the GNU General Public License
 #      along with this program.  If not, see <https://www.gnu.org/licenses/>.
 import json
-import sqlite3
-
 from flask import Blueprint, request, Response, abort
 from picure.Backend.Program import controler
 from picure.Backend.DB.db_handler import get_db
