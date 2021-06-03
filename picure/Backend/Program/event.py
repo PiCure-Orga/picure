@@ -34,6 +34,9 @@ class Event:
         self.target = program.get_current_targets().get(self.sensor.name) or None
 
     def check(self):
+        if self.target is None:
+            return
+
         expr = (
             str(self.sensor.get())
             + str(self.evaluation)
