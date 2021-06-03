@@ -11,24 +11,30 @@
 <div id="nav">
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
         <div class="container-fluid">
-            <a class="navbar-brand" href="#">PiCure</a>
+            <a class="navbar-brand" href="/">PiCure</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup"
                     aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
                 <div class="navbar-nav">
-                    <a class="nav-link active" aria-current="page" href="#">Home</a>
-                    <a class="nav-link" href="#">Program</a>
+                    <a class="nav-link active" aria-current="page" href="/">Home</a>
+                    <a class="nav-link" href="/program">Program</a>
                     <a class="nav-link" href="#">Settings</a>
                 </div>
             </div>
         </div>
     </nav>
 </div>
+<div class="container">
+    <div class="row p-3">
+        <div class="col-12">
+            <div id="alertbox" class="alert alert-danger collapse"></div>
+            <div id="warningbox" class="alert alert-warning collapse"></div>
+            <div id="infobox" class="alert alert-info collapse"></div>
+        </div>
+    </div>
+</div>
 {% block content %}{% endblock %}
-<footer class="text-center bg-dark">
-
-</footer>
 </body>
 </html>

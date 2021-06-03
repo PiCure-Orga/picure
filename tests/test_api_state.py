@@ -16,24 +16,25 @@
 
 
 def test_state_control_get(client):
-    assert client.get("/state/HEATING").data == b'[["HEATING", false]]'
+    assert client.get("/api/state/HEATING").data == b'[["HEATING", false]]'
     assert (
-        client.get("/state/HEATING,UV").data == b'[["HEATING", false], ["UV", false]]'
+        client.get("/api/state/HEATING,UV").data
+        == b'[["HEATING", false], ["UV", false]]'
     )
-    assert client.get("/state/wontfind").data == b'[["wontfind", null]]'
+    assert client.get("/api/state/wontfind").data == b'[["wontfind", null]]'
 
 
 def test_state_control_state_set(client):
-    before = client.get("/state/HEATING").data
+    before = client.get("/api/state/HEATING").data
     assert before == b'[["HEATING", false]]'
 
-    client.post("/state/HEATING", data=dict(state="On"))
-    after = client.get("/state/HEATING").data
+    client.post("/api/state/HEATING", data=dict(state="On"))
+    after = client.get("/api/state/HEATING").data
     assert after == b'[["HEATING", true]]'
     assert before != after
 
-    client.post("/state/HEATING", data=dict(state="Off"))
-    after2 = client.get("/state/HEATING").data
+    client.post("/api/state/HEATING", data=dict(state="Off"))
+    after2 = client.get("/api/state/HEATING").data
     assert after2 == b'[["HEATING", false]]'
 
     assert after2 == before
@@ -41,21 +42,23 @@ def test_state_control_state_set(client):
 
 def test_error_on_sensor_set(client):
     assert (
-        client.post("/state/SENSOR_TEMP", data=dict(state="Off")).status
+        client.post("/api/state/SENSOR_TEMP", data=dict(state="Off")).status
         == "500 INTERNAL SERVER ERROR"
     )
     assert (
-        client.post("/state/SENSOR_TEMP,SENSOR_HUMID", data=dict(state="Off")).status
+        client.post(
+            "/api/state/SENSOR_TEMP,SENSOR_HUMID", data=dict(state="Off")
+        ).status
         == "500 INTERNAL SERVER ERROR"
     )
 
 
 def test_state_control_toggle(client):
-    before = client.get("/state/HEATING").data
-    client.post("/state/HEATING", data=dict(switch="1"))
-    after = client.get("/state/HEATING").data
-    client.post("/state/HEATING", data=dict(switch="1"))
-    after2 = client.get("/state/HEATING").data
+    before = client.get("/api/state/HEATING").data
+    client.post("/api/state/HEATING", data=dict(switch="1"))
+    after = client.get("/api/state/HEATING").data
+    client.post("/api/state/HEATING", data=dict(switch="1"))
+    after2 = client.get("/api/state/HEATING").data
 
     assert before == b'[["HEATING", false]]'
     assert after == b'[["HEATING", true]]'
@@ -64,24 +67,24 @@ def test_state_control_toggle(client):
 
 def test_state_control_sanity_checking(client):
     assert (
-        client.post("/state/HEATING", data=dict(switch=1, state="On")).status
+        client.post("/api/state/HEATING", data=dict(switch=1, state="On")).status
         == "500 INTERNAL SERVER ERROR"
     )
     assert (
-        client.post("/state/HEATING", data=dict(switch=0, state="Off")).status
+        client.post("/api/state/HEATING", data=dict(switch=0, state="Off")).status
         == "500 INTERNAL SERVER ERROR"
     )
 
 
 def test_state_endpoint(client):
     assert (
-        client.get("/state?NAME_ONLY=True").data
+        client.get("/api/state?NAME_ONLY=True").data
         == b'["HEATING", "UV", "SENSOR_TEMP", "SENSOR_HUMID"]'
     )
 
     assert (
-        client.get("/state?FILTER=^SENSOR_.*&NAME_ONLY=True").data
+        client.get("/api/state?FILTER=^SENSOR_.*&NAME_ONLY=True").data
         == b'["SENSOR_TEMP", "SENSOR_HUMID"]'
     )
 
-    assert client.get("/state?FILTER=^SENSOR_.*").status == "200 OK"
+    assert client.get("/api/state?FILTER=^SENSOR_.*").status == "200 OK"

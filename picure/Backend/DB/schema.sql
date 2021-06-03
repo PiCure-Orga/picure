@@ -56,7 +56,7 @@ CREATE TABLE event(
     eval TEXT,
     derivation DECIMAL(4,2),
     PRIMARY KEY (id),
-    FOREIGN KEY (program_id) REFERENCES program(id)
+    FOREIGN KEY (program_id) REFERENCES program(id) ON DELETE CASCADE
 );
 CREATE TABLE task(
     id INTEGER,
@@ -66,7 +66,7 @@ CREATE TABLE task(
     action INTEGER,
     duration INTEGER,
     PRIMARY KEY (id),
-    FOREIGN KEY (event_id) REFERENCES event(id)
+    FOREIGN KEY (event_id) REFERENCES event(id) ON DELETE CASCADE
 );
 CREATE TABLE step(
     id INTEGER,
@@ -74,7 +74,7 @@ CREATE TABLE step(
     duration INTEGER,
     step_order INTEGER,
     PRIMARY KEY (id),
-    FOREIGN KEY (program_id) REFERENCES program(id)
+    FOREIGN KEY (program_id) REFERENCES program(id) ON DELETE CASCADE
 );
 CREATE TABLE target(
     id INTEGER,
@@ -82,7 +82,7 @@ CREATE TABLE target(
     sensor TEXT,
     value DECIMAL(4,2),
     PRIMARY KEY (id),
-    FOREIGN KEY (step_id) REFERENCES step(id)
+    FOREIGN KEY (step_id) REFERENCES step(id) ON DELETE CASCADE
 );
 CREATE TABLE program_run(
     id INTEGER,
@@ -92,7 +92,7 @@ CREATE TABLE program_run(
     start_timestamp INTEGER,
     pause_timestamp INTEGER,
     PRIMARY KEY (id),
-    FOREIGN KEY (program_id) REFERENCES program(id)
+    FOREIGN KEY (program_id) REFERENCES program(id) ON DELETE CASCADE
 );
 CREATE TABLE event_log(
     id INTEGER,
@@ -100,8 +100,8 @@ CREATE TABLE event_log(
     timestamp INTEGER,
     event_id INTEGER,
     PRIMARY KEY (id),
-    FOREIGN KEY (program_run_id) REFERENCES program_run(id),
-    FOREIGN KEY (event_id) REFERENCES event(id)
+    FOREIGN KEY (program_run_id) REFERENCES program_run(id) ON DELETE CASCADE ,
+    FOREIGN KEY (event_id) REFERENCES event(id) ON DELETE CASCADE
 );
 CREATE TABLE step_log(
     id INTEGER,
@@ -109,6 +109,6 @@ CREATE TABLE step_log(
     timestamp INTEGER,
     step_id INTEGER,
     PRIMARY KEY (id),
-    FOREIGN KEY (program_run_id) REFERENCES program_run(id),
-    FOREIGN KEY (step_id) REFERENCES step(id)
+    FOREIGN KEY (program_run_id) REFERENCES program_run(id) ON DELETE CASCADE ,
+    FOREIGN KEY (step_id) REFERENCES step(id) ON DELETE CASCADE
 );

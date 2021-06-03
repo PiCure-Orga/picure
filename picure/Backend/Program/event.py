@@ -26,14 +26,17 @@ class Event:
     target = None
     tasks = []
 
-    def __init__(self, id, sensor, evaluation, derivation, program):
-        self.db_id = id
+    def __init__(self, db_id, sensor, evaluation, derivation, program):
+        self.db_id = db_id
         self.sensor = get_hardware(sensor)
         self.evaluation = evaluation
         self.derivation = derivation
         self.target = program.get_current_targets().get(self.sensor.name) or None
 
     def check(self):
+        if self.target is None:
+            return
+
         expr = (
             str(self.sensor.get())
             + str(self.evaluation)
@@ -56,7 +59,7 @@ class Event:
                 .cursor()
                 .execute(
                     "SELECT id,name,hardware,action,duration from task where event_id = :event_id",
-                    {"event_id": self.db_id},
+                    (self.db_id,),
                 )
                 .fetchall()
             )

@@ -38,7 +38,7 @@ class Task:
         self.hardware.execute(self.action)
         if self.duration != 0:
             scheduler = Scheduler()
-            if not self.name in [f.id for f in scheduler.get_jobs()]:
+            if self.name not in [f.id for f in scheduler.get_jobs()]:
                 scheduler.add_job(
                     func=self.handle_duration,
                     trigger="date",

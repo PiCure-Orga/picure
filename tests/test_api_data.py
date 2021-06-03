@@ -30,6 +30,6 @@ def test_api_data(client, app):
         result = get_db().cursor().execute("SELECT * FROM latest_30_days").fetchall()
         get_db().cursor().close()
 
-    assert client.get("/data/SENSOR_TEMP/1").data == b"[]"
-    assert client.get("/data/SENSOR_TEMP/10").data == b"[]"
-    assert client.get("/data/SENSOR_TEMP/11").data == b'[[123, "SENSOR_TEMP", 100]]'
+    assert client.get("/api/data/SENSOR_TEMP/1").data == b"[]"
+    assert client.get("/api/data/SENSOR_TEMP/10").data == b"[]"
+    assert client.get("/api/data/SENSOR_TEMP/11").data == b'[[123, "SENSOR_TEMP", 100]]'

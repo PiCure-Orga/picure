@@ -4,14 +4,14 @@
 <script>
     var sensor_req = new XMLHttpRequest()
     sensor_req.onreadystatechange=handle_sensors
-    sensor_req.open("GET", '/state?FILTER=^SENSOR_.*&NAME_ONLY=True')
+    sensor_req.open("GET", '/api/state?FILTER=^SENSOR_.*&NAME_ONLY=True')
     sensor_req.send()
 
     function handle_sensors() {
         if (sensor_req.readyState == XMLHttpRequest.DONE){
             if (sensor_req.status == 200){
                 var sensors_to_query = JSON.parse(sensor_req.responseText)
-                var query_string = "/graphs/"
+                var query_string = "/api/graphs/"
                 sensors_to_query.forEach(e => {
                     query_string += e+","
                 })

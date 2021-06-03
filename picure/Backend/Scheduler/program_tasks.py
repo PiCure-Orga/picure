@@ -28,6 +28,10 @@ scheduler = Scheduler()
 )
 def validate_events():
     with scheduler.app.app_context():
-        events = controler.get_current_program().get_events()
+        try:
+            events = controler.get_current_program().get_events()
+        except Exception:
+            print("INFO: No program running at the moment. Cancel step evaluation.")
+            return
         for e in events:
             e.check()

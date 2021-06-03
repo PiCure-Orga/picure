@@ -23,8 +23,6 @@ class Program:
     run_id = None
     program_id = None
     name = None
-    targets = []
-    events = []
 
     def __init__(self, prog_id, run_id, name):
         self.program_id = prog_id
@@ -32,58 +30,61 @@ class Program:
         self.name = name
 
     def get_events(self):
-        if len(self.events) == 0:
-            fetched = (
-                get_db()
-                .cursor()
-                .execute(
-                    "SELECT id, sensor, eval, derivation from event where program_id = :program_id",
-                    {"program_id": self.program_id},
-                )
-                .fetchall()
+        events = []
+        fetched = (
+            get_db()
+            .cursor()
+            .execute(
+                "SELECT id, sensor, eval, derivation from event where program_id = ?",
+                (self.program_id,),
             )
-            for f in fetched:
-                self.events.append(
-                    Event(f["id"], f["sensor"], f["eval"], f["derivation"], self)
-                )
-            get_db().cursor().close()
+            .fetchall()
+        )
+        for f in fetched:
+            events.append(Event(f["id"], f["sensor"], f["eval"], f["derivation"], self))
+        get_db().cursor().close()
 
-        return self.events
+        return events
+
+    def get_steps(self):
+        return (
+            get_db()
+            .cursor()
+            .execute(
+                "SELECT id, duration FROM step where program_id = ? order by step_order asc",
+                (self.program_id,),
+            )
+            .fetchall()
+        )
 
     def get_step_targets(self):
-        if len(self.targets) == 0:
-            steps = (
+        to_return = []
+        steps = self.get_steps()
+
+        for s in steps:
+            db_targets = (
                 get_db()
                 .cursor()
                 .execute(
-                    "SELECT id, duration FROM step where program_id = :program_id order by step_order asc",
-                    {"program_id": self.program_id},
+                    "SELECT sensor, value FROM target where step_id = ?",
+                    (s["id"],),
                 )
                 .fetchall()
             )
+            targets = {t["sensor"]: t["value"] for t in db_targets}
+            to_return.append((s["id"], s["duration"], targets))
 
-            for s in steps:
-                db_targets = (
-                    get_db()
-                    .cursor()
-                    .execute(
-                        "SELECT sensor, value FROM target where step_id = :step_id",
-                        {"step_id": s["id"]},
-                    )
-                    .fetchall()
-                )
-                targets = {t["sensor"]: t["value"] for t in db_targets}
-                self.targets.append((s["duration"], targets))
-
-        return self.targets
+        return to_return
 
     def get_current_targets(self):
+        if self.run_id == 0:
+            return None
         start = (
             get_db()
             .cursor()
             .execute(
-                "SELECT start_timestamp from program_run where id = :id",
-                {"id": self.run_id},
+                "SELECT start_timestamp from program_run where id = ?",
+                (self.run_id,),
             )
             .fetchall()
         )
@@ -94,7 +95,7 @@ class Program:
 
         for t in self.get_step_targets():
             if step_time_in <= passed:
-                step_time_in += t[0]
+                step_time_in += t[1]
                 step += 1
 
-        return self.targets[step - 1][1]
+        return self.get_step_targets()[step - 1][2]

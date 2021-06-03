@@ -13,7 +13,7 @@
 #
 #      You should have received a copy of the GNU General Public License
 #      along with this program.  If not, see <https://www.gnu.org/licenses/>.
-from . import graphs, loggerio, state_control, index
+from . import graphs, loggerio, state_control, index, program
 
 
 def register_blueprints(app):
@@ -21,3 +21,4 @@ def register_blueprints(app):
     app.register_blueprint(state_control.control)
     app.register_blueprint(loggerio.loggerio)
     app.register_blueprint(graphs.graphs)
+    app.register_blueprint(program.program)

@@ -1,8 +1,92 @@
 {% extends 'base.html' %}
 {% block title %}Program - PiCure {% endblock %}
 {% block head %}
-<script src="{{ url_for('static', filename='jquery-3.6.0.min.js') }}"></script>
+<script>
+function delayed_reload(){
+    setTimeout(function () {
+        window.location.reload()
+    }, 100)
+}
+
+function delete_prog(prog_id) {
+    req = new XMLHttpRequest()
+    req.open("DELETE", "/api/program/"+prog_id, true)
+    req.onload = function () {
+        if(req.readyState == req.DONE){
+            if(req.status == "200"){
+                delayed_reload()
+                console.log("DELETED program with id: "+prog_id)
+            }
+            if(req.status == "500"){
+                var box = document.getElementById("alertbox")
+                box.innerText = 'Warning: Can`t delete program. Its probably running at the moment.'
+                new bootstrap.Collapse(box, {
+                    show: true
+                })
+            }
+        }
+    }
+    req.send()
+}
+
+</script>
 {% endblock %}
 {% block content %}
-<div>Test</div>
+<div class="container p-4">
+    <div class="row">
+        <div class="col-8"><h1>Programs</h1></div>
+        <div class="col-4"><button type="button" class="btn btn-primary float-end" data-bs-toggle="collapse" data-bs-target="#add-new-form" aria-expanded="false" aria-controls="add-new-form">Add new...</button></div>
+    </div>
+    <div class="row collapse mt-4" id="add-new-form">
+        <h3>Create a new program</h3>
+        <form action="/api/program" method="post">
+            <div class="row mt-4 align-items-center">
+                <div class="col-2">
+                    <label for="program-name" class="form-label">Program name:</label>
+                </div>
+                <div class="col-10">
+                    <input type="text" class="form-control" id="program-name" name="ProgramName" aria-describedby="program-name-help">
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-2"></div>
+                <div class="col-10">
+                    <div id="program-name-help" class="form-text">Enter a name for your program. Does not have to be unique.</div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12">
+                    <button type="submit" class="btn btn-primary float-end" onclick="delayed_reload()">Add</button>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="row mt-4">
+        <div class="col-12">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <td>Program ID</td>
+                        <td>Program name</td>
+                        <td>No. Steps</td>
+                        <td>Actions</td>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for p in program %}
+                    <tr class="align-middle">
+                        <td>{{ p.program_id }}</td>
+                        <td>{{ p.name }}</td>
+                        <td>{{ p.get_steps()|length }}</td>
+                        <td>
+                            <button type="button" class="btn btn-primary" onclick="location.href='/program/{{ p.program_id }}'">Edit</button>
+                            <button type="button" class="btn btn-danger" onclick="delete_prog({{ p.program_id }})">Delete</button>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
 {% endblock %}
