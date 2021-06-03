@@ -3,6 +3,7 @@
 {% block head %}
 <script>
     var current_prog_id = window.location.href.split("/")[4]
+
     function delayed_reload(){
         setTimeout(function () {
             window.location.reload()
@@ -14,9 +15,9 @@
         req.open("DELETE", "/api/program/"+current_prog_id+"/step/"+step_id, true)
         req.onload = function () {
             if(req.readyState == req.DONE){
-                if(req.status == "200"){
+                if(req.status == "204"){
                     delayed_reload()
-                    console.log("DELETED step with id: "+current_prog_id+" for program: " +prog_id)
+                    console.log("DELETED step with id: "+current_prog_id+" for program: " +step_id)
                 }
                 if(req.status == "500"){
                     var box = document.getElementById("alertbox")
@@ -58,7 +59,7 @@
             var targets_cell = row.insertCell(2)
             var actions_cell = row.insertCell(3)
 
-            id_cell.innerText = i+1
+            id_cell.innerText = data[i][0]
             duration_cell.innerHTML = '<div class="col">'+formatTime(data[i][1])+'</div>'
 
             for(t=0;t<Object.entries(data[i][2]).length;t++){
@@ -70,7 +71,7 @@
             }
 
             actions_cell.innerHTML = '<button type="button" class="btn btn-primary">Edit</button> ' +
-                '<button type=button class="btn btn-danger" onclick="delete_prog('+String(i+1)+')">X</button>'
+                '<button type=button class="btn btn-danger" onclick="delete_prog('+data[i][0]+')">X</button>'
         }
     }
 
@@ -133,7 +134,7 @@
     </table>
 </div>
 <script>
-    document.getElementById('new-step').setAttribute('action','/api/program/step/'+current_prog_id)
+    document.getElementById('new-step').setAttribute('action','/api/program/'+current_prog_id+'/step')
     document.getElementById('title-heading').innerHTML = '<h2> Edit Program - ' + current_prog_id + '</h2>'
 </script>
 {% endblock %}
