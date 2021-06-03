@@ -26,8 +26,8 @@ def test_program(app, program):
         assert len(program.get_events()) == 1
         assert program.name == "TEST"
 
-        assert (program.get_step_targets()[0][1])["SENSOR_TEMP"] == 100
-        assert (program.get_step_targets()[0][1])["SENSOR_HUMID"] == 100
+        assert (program.get_step_targets()[0][2])["SENSOR_TEMP"] == 100
+        assert (program.get_step_targets()[0][2])["SENSOR_HUMID"] == 100
 
         for e in program.get_events():
             assert len(e.get_tasks()) == 1

@@ -51,9 +51,10 @@ def delete_program(prog_id):
     if (
         db.cursor()
         .execute(
-            "SELECT max(enabled) as enabled from program_run where program_id = ?", (prog_id,)
+            "SELECT max(enabled) as enabled from program_run where program_id = ?",
+            (prog_id,),
         )
-        .fetchone()['enabled']
+        .fetchone()["enabled"]
         == 1
     ):
         abort(500, "Cant delete currently running program")
@@ -62,7 +63,8 @@ def delete_program(prog_id):
     db.cursor().close()
     return "Ok"
 
-@program.route("/api/program/<int:prog_id>", methods=['GET'])
+
+@program.route("/api/program/<int:prog_id>", methods=["GET"])
 def get_program(prog_id):
     programs = controler.get_dict_of_programs()
     if prog_id not in programs:
@@ -70,3 +72,39 @@ def get_program(prog_id):
 
     steps = programs[prog_id].get_step_targets()
     return json.dumps(steps)
+
+
+@program.route("/api/program/<int:prog_id>/step", methods=["POST"])
+def add_step(prog_id):
+    form = request.form.to_dict()
+    if not ("value" in form and "unit" in form and len(form) == 2):
+        abort(500, "Malformed request")
+
+    if form["unit"] == "s":
+        converted_duration = int(form["value"]) * 1000
+    elif form["unit"] == "m":
+        converted_duration = int(form["value"]) * 1000 * 60
+    elif form["unit"] == "h":
+        converted_duration = int(form["value"]) * 1000 * 60 * 60
+    elif form["unit"] == "d":
+        converted_duration = int(form["value"]) * 1000 * 60 * 60 * 24
+
+    get_db().cursor().execute(
+        "INSERT INTO step (program_id, duration, step_order) VALUES (:prog_id, :duration , (SELECT max(step_order) FROM step where program_id = :prog_id)+1 )",
+        {"prog_id": prog_id, "duration": converted_duration},
+    )
+    get_db().commit()
+    get_db().cursor().close()
+
+    return Response(response="No content", status=204)
+
+
+@program.route("/api/program/<int:prog_id>/step/<int:step_id>", methods=["DELETE"])
+def delete_step(prog_id, step_id):
+    get_db().cursor().execute(
+        "DELETE from step where program_id = :prog_id and step_order = :step_id",
+        {"prog_id": prog_id, "step_id": step_id},
+    )
+    get_db().commit()
+    get_db().cursor().close()
+    return Response(response="Deleted step " + str(step_id) + "from program " + str(prog_id), status=204)

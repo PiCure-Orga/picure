@@ -41,9 +41,7 @@ class Program:
             .fetchall()
         )
         for f in fetched:
-            events.append(
-                Event(f["id"], f["sensor"], f["eval"], f["derivation"], self)
-            )
+            events.append(Event(f["id"], f["sensor"], f["eval"], f["derivation"], self))
         get_db().cursor().close()
 
         return events
@@ -74,7 +72,7 @@ class Program:
                 .fetchall()
             )
             targets = {t["sensor"]: t["value"] for t in db_targets}
-            to_return.append((s["duration"], targets))
+            to_return.append((s["id"], s["duration"], targets))
 
         return to_return
 
@@ -97,7 +95,7 @@ class Program:
 
         for t in self.get_step_targets():
             if step_time_in <= passed:
-                step_time_in += t[0]
+                step_time_in += t[1]
                 step += 1
 
-        return self.get_step_targets()[step - 1][1]
+        return self.get_step_targets()[step - 1][2]

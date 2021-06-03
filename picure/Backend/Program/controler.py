@@ -35,6 +35,7 @@ def sanity_checks():
         return False
     return True
 
+
 def get_dict_of_programs():
     if not sanity_checks():
         return 0
