@@ -54,7 +54,10 @@ def program(app):
     )
 
     with app.app_context():
-        for file in [f for f in os.listdir(insert_path) if f.endswith(".sql")]:
+        files = [f for f in os.listdir(insert_path) if f.endswith(".sql")]
+        files.sort()
+
+        for file in files:
             from picure.Backend.DB.db_handler import get_db
 
             file_path = os.path.join(insert_path, file)
