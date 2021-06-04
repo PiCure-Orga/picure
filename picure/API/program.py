@@ -59,7 +59,7 @@ def delete_program(prog_id):
     db.cursor().execute("DELETE from program where id = ?", (prog_id,))
     db.commit()
     db.cursor().close()
-    return "Ok"
+    return Response(status=204, response="Deleted program")
 
 
 @program.route("/api/program/<int:prog_id>", methods=["GET"])
