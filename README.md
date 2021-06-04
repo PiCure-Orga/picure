@@ -1,6 +1,6 @@
-[![Build](https://github.com/mhupfauer/picure/actions/workflows/lint_and_install.yml/badge.svg?branch=master)](https://github.com/mhupfauer/picure/actions/workflows/lint_and_install.yml)
-[![Docker](https://github.com/mhupfauer/picure/actions/workflows/docker-publish.yml/badge.svg)](https://github.com/mhupfauer/picure/actions/workflows/docker-publish.yml)
-[![codecov](https://codecov.io/gh/mhupfauer/picure/branch/master/graph/badge.svg?token=BERJVA1WKV)](https://codecov.io/gh/mhupfauer/picure)
+[![Build](https://github.com/PiCure-Orga/picure/actions/workflows/lint_and_install.yml/badge.svg?branch=master)](https://github.com/PiCure-Orga/picure/actions/workflows/lint_and_install.yml)
+[![Docker](https://github.com/PiCure-Orga/picure/actions/workflows/docker-publish.yml/badge.svg)](https://github.com/PiCure-Orga/picure/actions/workflows/docker-publish.yml)
+[![codecov](https://codecov.io/gh/PiCure-Orga/picure/branch/master/graph/badge.svg?token=BERJVA1WKV)](https://codecov.io/gh/PiCure-Orga/picure)
 [![codestyle](https://img.shields.io/badge/code%20style-black-black)](https://github.com/psf/black#readme)
 
 # PiCure
@@ -28,5 +28,5 @@ detects changes.
 ```gunicorn -w 2 -b 0.0.0.0:5000 "picure:create_app()"```
 
 ## License
-[GNU General Public License v3.0](https://github.com/mhupfauer/picure/blob/master/LICENSE.txt)
+[GNU General Public License v3.0](https://github.com/PiCure-Orga/picure/blob/master/LICENSE.txt)
 
