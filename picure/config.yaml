@@ -10,10 +10,10 @@ UV:
 
 SENSOR_TEMP:
   TYPE: Sensor
-  #SENSOR_TYPE: SHT1_Temperature_Kernel
+  #SENSOR_TYPE: SHT1_Temperature_Adafruit
   SENSOR_TYPE: Mock
 
 SENSOR_HUMID:
   TYPE: Sensor
-  #SENSOR_TYPE: SHT1_Humidity_Kernel
+  #SENSOR_TYPE: SHT1_Humidity_Adafruit
   SENSOR_TYPE: Mock

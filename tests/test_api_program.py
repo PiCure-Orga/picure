@@ -159,3 +159,57 @@ def test_api_program(client, program, app):
             .fetchone()["count"]
             == 2
         )
+
+    assert (
+        json.loads(client.get("/api/program/1/event").data)[0]["name"]
+        == "TEMP < TARGET -2"
+    )
+
+    assert len(json.loads(client.get("/api/program/1/event/1/task").data)) == 1
+    with app.app_context():
+        assert (
+            get_db()
+            .cursor()
+            .execute("SELECT count(id) as count from task where event_id = 1")
+            .fetchone()["count"]
+            == 1
+        )
+
+    assert (
+        client.post(
+            "/api/program/1/event/1/task",
+            data=dict(name="TEST", hardware="TEST_HW", action=1, duration=0),
+        ).status
+        == "204 NO CONTENT"
+    )
+    assert len(json.loads(client.get("/api/program/1/event/1/task").data)) == 2
+    with app.app_context():
+        assert (
+            get_db()
+            .cursor()
+            .execute("SELECT count(id) as count from task where event_id = 1")
+            .fetchone()["count"]
+            == 2
+        )
+
+    assert client.delete("/api/program/1/event/1/task/2").status == "204 NO CONTENT"
+    assert len(json.loads(client.get("/api/program/1/event/1/task").data)) == 1
+    with app.app_context():
+        assert (
+            get_db()
+            .cursor()
+            .execute("SELECT count(id) as count from task where event_id = 1")
+            .fetchone()["count"]
+            == 1
+        )
+
+    assert (
+        client.post(
+            "/api/program/1/event",
+            data=dict(name="TEST", sensor="TEST", eval="=", derivation="2"),
+        ).status
+        == "204 NO CONTENT"
+    )
+    assert len(json.loads(client.get("/api/program/1/event").data)) == 2
+    assert client.delete("/api/program/1/event/2").status == "204 NO CONTENT"
+    assert len(json.loads(client.get("/api/program/1/event").data)) == 1
