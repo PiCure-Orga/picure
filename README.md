@@ -7,22 +7,24 @@
 Dry ageing and curing with precision!
 
 ## Current state of development
-PiCure currently reads data from SHTC3 sensor, stores it and makes it accessible in various ways.
+PiCure has reached alpha state. This means the software basically works but I did not yet test this enought on actual hardware.
 
-The system can read generalized programs from the database. A program consists of one or multiple steps each containting target values that sensor should have during the
-duration of a step. A program further contains events (i.e.: `if SENSOR_TEMP >/</== CURRENT_PROGRAM_STEP_TARGET['TEMP'] - 5°C`) that query a sensors value and validate it
-based on a logical expression (also stored inside the database) against the target value for that sensor. If the expression validates to `True` all associated tasks of this
-event will be executed. Each task can either switch on/off or toggle a `Hardware` (i.e.: `COOLING SWTICH.ON`). Further there is support for a duration in milliseconds after
-which the action is inverted. These events will be validated every 10 seconds. Durations can be lower though.
+## How this all works
+The whole application trys to be as modulare and portable as somehow possible. At the moment very much at the expense of a lot of usability features.
+This is due to the fact that I plan to support more applications like a smoking cabinet or whatnot. This modular approach allows you to create a program
+consisting of several steps varying in duration. These steps contain so called targets - a value at which we want our sensor to be during this step.
 
-## Next steps
-A users should be able to create a program via the web ui
+Second, you can create so called events - basically checks wether or not a sensor is above, below or equal the current steps target. If the event validates
+to True a task is queued. This task Toggles, Enables or Disables a hardware actor (probably conntected to a relay). Additonaly a task can have a duration
+after which the action is inverted. This comes in handy for inert sensor readings where you know the value increases significantly faster then a sensor
+detects changes. 
 
 ## Setup
 ### Development
 ```python -m flask run```
 
 ### Production
+```pip install .```
 ```gunicorn -w 2 -b 0.0.0.0:5000 "picure:create_app()"```
 
 ## License
