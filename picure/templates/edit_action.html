@@ -1,0 +1,167 @@
+{% extends 'base.html' %}
+{% block title %}Edit Event Tasks - PiCure {% endblock %}
+{% block head %}
+    <script>
+        var current_prog_id = window.location.href.split("/")[4]
+        var current_event_id = window.location.href.split("/")[6]
+
+        function delayed_reload(){
+            setTimeout(function () {
+                window.location.reload()
+            }, 100)
+        }
+
+        function formatTime(timeMS) {
+            var ms = timeMS
+
+            var d = Math.round(ms / 86400000)
+            ms = ms % 86400000
+
+            var h = Math.round(ms / 3600000)
+            ms = ms % 3600000
+
+            var m = Math.round(ms / 60000)
+            ms = ms % 60000
+
+            var s = Math.round(ms / 1000)
+            ms = Math.round(ms % 1000)
+
+
+            return d + ":" + h + ":" + m + ":" + s + ":" + ms
+        }
+
+        function delete_task(task_id) {
+            req = new XMLHttpRequest()
+            req.open("DELETE", "/api/program/"+current_prog_id+"/event/"+current_event_id+"/task/"+task_id, true)
+            req.onload = function () {
+                if(req.readyState == req.DONE){
+                    if(req.status == "204"){
+                        delayed_reload()
+                        console.log("DELETED sensor target for sensor "+task_id)
+                    }
+                    if(req.status == "500"){
+                        var box = document.getElementById("alertbox")
+                        box.innerText = 'Warning: Can`t delete sensor target. Something is wrong.'
+                        new bootstrap.Collapse(box, {
+                            show: true
+                        })
+                    }
+                }
+            }
+            req.send()
+        }
+
+        function add_tbl_elements_from_json(data) {
+            var tbl = document.getElementById('tasks-table').getElementsByTagName('tbody')[0];
+
+            var task_data = Object.entries(data)
+
+            for(i=0; i<task_data.length; i++){
+
+                var action = task_data[i][1]["action"]
+
+                var row = tbl.insertRow(i)
+                var id_cell = row.insertCell(0)
+                var name_cell = row.insertCell(1)
+                var hardware_cell = row.insertCell(2)
+                var hardware_action_cell = row.insertCell(3)
+                var duration_cell = row.insertCell(4)
+                var actions_cell = row.insertCell(5)
+
+                id_cell.innerText = task_data[i][1]["id"]
+                name_cell.innerText = task_data[i][1]["name"]
+                hardware_cell.innerText = task_data[i][1]["hardware"]
+
+                if(action == 0){
+                    hardware_action_cell.innerText = "TOGGLE"
+                } else if(action == 1){
+                    hardware_action_cell.innerText = "ON"
+                } else {
+                    hardware_action_cell.innerText = "OFF"
+                }
+
+
+                duration_cell.innerText = formatTime(task_data[i][1]["duration"])
+                actions_cell.innerHTML = '<button type="button" class="btn btn-danger" onclick=\'delete_task("'+task_data[i][1]["id"]+'")\'>X</button>'
+            }
+        }
+
+
+        req = new XMLHttpRequest()
+        req.open("GET", "/api/program/"+current_prog_id+"/event/"+current_event_id+"/task")
+        req.onreadystatechange = function () {
+                if(req.readyState == req.DONE){
+                    if(req.status == "200"){
+                        var tasks = JSON.parse(req.responseText)
+                        add_tbl_elements_from_json(tasks)
+                    }
+                }
+            }
+        req.send()
+    </script>
+{% endblock %}
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-6">
+            <h2 id="heading-title"></h2>
+        </div>
+        <div class="col-6">
+            <button class="btn btn-primary float-end" data-bs-toggle="collapse" data-bs-target="#new_task_form" aria-expanded="false" aria-controls="new_task_form">Add new task...</button>
+        </div>
+    </div>
+    <div class="row mt-4">
+        <div id="new_task_form" class="collapse">
+            <form id="new-task" method="post">
+                <div class="row">
+                    <div class="col-4"><label class="form-label" for="program-duration">Define new task</label></div>
+                    <div class="col-4"><input name="name" type="text" class="form-control"></div>
+                    <div class="col-4"><input name="hardware" type="text" class="form-control"></div>
+                </div>
+                <div class="row">
+                    <div class="col-4"></div>
+                    <div class="col-4 form-text">Enter the name for the task</div>
+                    <div class="col-4 form-text">Enter the actor hardware for this task</div>
+                </div>
+                <div class="row">
+                    <div class="col-4"></div>
+                    <div class="col-4"><input name="action" type="text" class="form-control"></div>
+                    <div class="col-4"><input name="duration" type="text" class="form-control"></div>
+                </div>
+                <div class="row">
+                    <div class="col-4"></div>
+                    <div class="col-4 form-text">
+                        Enter the action for the hardware<br />
+                        0 = Toggle, 1 = On, 2 = Off
+                    </div>
+                    <div class="col-4 form-text">Enter the duration for the task (0 if just once)</div>
+                </div>
+                <div class="row mt-1">
+                    <div class="col-8"></div>
+                    <div class="col-4">
+                        <button type="submit" class="btn btn-primary float-end" onclick="delayed_reload()">Add</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <table id="tasks-table" class="table table-striped mt-4">
+        <thead>
+            <tr>
+                <td>Task Id</td>
+                <td>Name</td>
+                <td>Hardware</td>
+                <td>Hardware Action</td>
+                <td>Duration (d:h:m:s:ms)</td>
+                <td>Actions</td>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+</div>
+<script>
+    document.getElementById('heading-title').innerText = "Edit task for event - " + current_event_id
+    document.getElementById('new-task').setAttribute('action', "/api/program/"+current_prog_id+"/event/"+current_event_id+"/task")
+</script>
+{% endblock %}

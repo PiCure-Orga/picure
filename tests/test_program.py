@@ -43,4 +43,4 @@ def test_sanity_check(app, program):
             "INSERT INTO program_run (program_id, enabled) VALUES (1, 1)"
         )
         assert controler.get_current_program() == 0
-        assert controler.sanity_checks() == True
+        assert controler.sanity_checks() is True

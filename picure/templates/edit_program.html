@@ -1,139 +1,275 @@
 {% extends 'base.html' %}
 {% block title %}Edit Program - PiCure {% endblock %}
 {% block head %}
-<script>
-    var current_prog_id = window.location.href.split("/")[4]
+    <script>
+        var current_prog_id = window.location.href.split("/")[4]
 
-    function delayed_reload(){
-        setTimeout(function () {
-            window.location.reload()
-        }, 100)
-    }
+        function delayed_reload() {
+            setTimeout(function () {
+                window.location.reload()
+            }, 100)
+        }
 
-    function delete_prog(step_id) {
+        function delete_event(event_id) {
+            req = new XMLHttpRequest()
+            req.open("DELETE", "/api/program/" + current_prog_id + "/event/" + event_id, true)
+            req.onload = function () {
+                if (req.readyState == req.DONE) {
+                    if (req.status == "204") {
+                        delayed_reload()
+                        console.log("DELETED event with id: " + current_prog_id + " for program: " + event_id)
+                    }
+                    if (req.status == "500") {
+                        var box = document.getElementById("alertbox")
+                        box.innerText = 'Warning: Can`t delete event. Something is wrong.'
+                        new bootstrap.Collapse(box, {
+                            show: true
+                        })
+                    }
+                }
+            }
+            req.send()
+        }
+
+        function delete_prog(step_id) {
+            req = new XMLHttpRequest()
+            req.open("DELETE", "/api/program/" + current_prog_id + "/step/" + step_id, true)
+            req.onload = function () {
+                if (req.readyState == req.DONE) {
+                    if (req.status == "204") {
+                        delayed_reload()
+                        console.log("DELETED step with id: " + current_prog_id + " for program: " + step_id)
+                    }
+                    if (req.status == "500") {
+                        var box = document.getElementById("alertbox")
+                        box.innerText = 'Warning: Can`t delete step. Something is wrong.'
+                        new bootstrap.Collapse(box, {
+                            show: true
+                        })
+                    }
+                }
+            }
+            req.send()
+        }
+
+        function formatTime(timeMS) {
+            var ms = timeMS
+
+            var d = Math.round(ms / 86400000)
+            ms = ms % 86400000
+
+            var h = Math.round(ms / 3600000)
+            ms = ms % 3600000
+
+            var m = Math.round(ms / 60000)
+            ms = ms % 60000
+
+            var s = Math.round(ms / 1000)
+            ms = Math.round(ms % 1000)
+
+
+            return d + ":" + h + ":" + m + ":" + s + ":" + ms
+        }
+
+        function add_event_tbl_elements_from_json(data) {
+            var tbl = document.getElementById('event_tbl').getElementsByTagName('tbody')[0];
+            for (i = 0; i < data.length; i++) {
+                var row = tbl.insertRow(i)
+                var id_cell = row.insertCell(0)
+                var name_cell = row.insertCell(1)
+                var sensor_cell = row.insertCell(2)
+                var evaluation_cell = row.insertCell(3)
+                var derivation_cell = row.insertCell(4)
+                var actions_cell = row.insertCell(5)
+
+                id_cell.innerText = data[i]["id"]
+                name_cell.innerText = data[i]["name"]
+                sensor_cell.innerText = data[i]["sensor"]
+                evaluation_cell.innerText = data[i]["evaluation"]
+                derivation_cell.innerText = data[i]["derivation"]
+
+                actions_cell.innerHTML = '<button type="button" class="btn btn-primary" onclick=\'location.href="' + "/program/" + current_prog_id + "/event/" + data[i]["id"] + '"\'>Edit</button> ' +
+                    '<button type=button class="btn btn-danger" onclick="delete_event(' + data[i]["id"] + ')">X</button>'
+            }
+        }
+
+        function add_tbl_elements_from_json(data) {
+            var tbl = document.getElementById('step_tbl').getElementsByTagName('tbody')[0];
+            for (i = 0; i < data.length; i++) {
+                var row = tbl.insertRow(i)
+                var id_cell = row.insertCell(0)
+                var duration_cell = row.insertCell(1)
+                var targets_cell = row.insertCell(2)
+                var actions_cell = row.insertCell(3)
+
+                id_cell.innerText = data[i][0]
+                duration_cell.innerHTML = '<div class="col">' + formatTime(data[i][1]) + '</div>'
+
+                for (t = 0; t < Object.entries(data[i][2]).length; t++) {
+                    var l_dat = Object.entries(data[i][2])[t]
+                    targets_cell.innerHTML += '<div class="row">' +
+                        '<div class="col-6">' + l_dat[0] + '</div>' +
+                        '<div class="col-6">' + l_dat[1] + '</div>' +
+                        '</div>'
+                }
+
+                actions_cell.innerHTML = '<button type="button" class="btn btn-primary" onclick=\'location.href="' + "/program/" + current_prog_id + "/step/" + data[i][0] + '"\'>Edit</button> ' +
+                    '<button type=button class="btn btn-danger" onclick="delete_prog(' + data[i][0] + ')">X</button>'
+            }
+        }
+
         req = new XMLHttpRequest()
-        req.open("DELETE", "/api/program/"+current_prog_id+"/step/"+step_id, true)
-        req.onload = function () {
-            if(req.readyState == req.DONE){
-                if(req.status == "204"){
-                    delayed_reload()
-                    console.log("DELETED step with id: "+current_prog_id+" for program: " +step_id)
-                }
-                if(req.status == "500"){
-                    var box = document.getElementById("alertbox")
-                    box.innerText = 'Warning: Can`t delete step. Something is wrong.'
-                    new bootstrap.Collapse(box, {
-                        show: true
-                    })
-                }
-            }
-        }
-        req.send()
-    }
-
-    function formatTime(timeMS) {
-        var ms = timeMS
-
-        var d = Math.round(ms/86400000)
-        ms = ms % 86400000
-
-        var h = Math.round(ms/3600000)
-        ms = ms%3600000
-
-        var m = Math.round(ms/60000)
-        ms = ms%60000
-
-        var s = Math.round(ms/1000)
-        ms = Math.round(ms%1000)
-
-
-        return d + ":" + h + ":" + m + ":" + s + ":" + ms
-    }
-
-    function add_tbl_elements_from_json(data) {
-        var tbl = document.getElementById('step_tbl').getElementsByTagName('tbody')[0];
-        for(i=0; i<data.length; i++){
-            var row = tbl.insertRow(i)
-            var id_cell = row.insertCell(0)
-            var duration_cell = row.insertCell(1)
-            var targets_cell = row.insertCell(2)
-            var actions_cell = row.insertCell(3)
-
-            id_cell.innerText = data[i][0]
-            duration_cell.innerHTML = '<div class="col">'+formatTime(data[i][1])+'</div>'
-
-            for(t=0;t<Object.entries(data[i][2]).length;t++){
-                var l_dat = Object.entries(data[i][2])[t]
-                targets_cell.innerHTML += '<div class="row">' +
-                    '<div class="col-6">'+l_dat[0]+'</div>' +
-                    '<div class="col-6">'+l_dat[1]+'</div>' +
-                    '</div>'
-            }
-
-            actions_cell.innerHTML = '<button type="button" class="btn btn-primary" onclick=\'location.href="'+"/program/"+current_prog_id+"/step/"+data[i][0]+'"\'>Edit</button> ' +
-                '<button type=button class="btn btn-danger" onclick="delete_prog('+data[i][0]+')">X</button>'
-        }
-    }
-
-    req = new XMLHttpRequest()
-    req.open("GET", "/api/program/"+current_prog_id)
-    req.onreadystatechange = function () {
-            if(req.readyState == req.DONE){
-                if(req.status == "200"){
+        req.open("GET", "/api/program/" + current_prog_id)
+        req.onreadystatechange = function () {
+            if (req.readyState == req.DONE) {
+                if (req.status == "200") {
                     var steps = JSON.parse(req.responseText)
                     add_tbl_elements_from_json(steps)
                 }
             }
         }
-    req.send()
-</script>
+        req.send()
+
+        req1 = new XMLHttpRequest()
+        req1.open("GET", "/api/program/" + current_prog_id + "/event")
+        req1.onreadystatechange = function () {
+            if (req1.readyState == req1.DONE) {
+                if (req1.status == "200") {
+                    var events = JSON.parse(req1.responseText)
+                    add_event_tbl_elements_from_json(events)
+                }
+            }
+        }
+        req1.send()
+    </script>
 {% endblock %}
 {% block content %}
-<div class="container">
-<div class="row">
-    <div id="title-heading" class="col">
-    </div>
-    <div class="col">
-        <button class="btn btn-primary float-end" data-bs-toggle="collapse" data-bs-target="#new_step_form" aria-expanded="false" aria-controls="new_step_form">Add new step...</button>
-    </div>
-    </div>
-    <div class="row mt-4">
-        <div id="new_step_form" class="collapse">
-            <form id="new-step" method="post">
-                <div class="row">
-                    <div class="col-4"><label class="form-label" for="program-duration">Program duration and unit</label></div>
-                    <div class="col-4"><input name="value" type="text" class="form-control"></div>
-                    <div class="col-4"><input name="unit" type="text" class="form-control"></div>
-                </div>
-                <div class="row">
-                    <div class="col-4"></div>
-                    <div class="col-4 form-text">Enter the value</div>
-                    <div class="col-4 form-text">Enter the unit (ms/s/m/h/d)</div>
-                </div>
-                <div class="row mt-1">
-                    <div class="col-8"></div>
-                    <div class="col-4">
-                        <button type="submit" class="btn btn-primary float-end" onclick="delayed_reload()">Add</button>
+    <div class="container">
+        <div class="row">
+            <div id="title-heading" class="col"></div>
+        </div>
+        <div class="row mt-4">
+            <div class="col">
+                <h3>Steps</h3>
+            </div>
+            <div class="col">
+                <button class="btn btn-primary float-end" data-bs-toggle="collapse" data-bs-target="#new_step_form"
+                        aria-expanded="false" aria-controls="new_step_form">Add new step...
+                </button>
+            </div>
+        </div>
+        <div class="row mt-4">
+            <div id="new_step_form" class="collapse">
+                <form id="new-step" method="post">
+                    <div class="row">
+                        <div class="col-4"><label class="form-label" for="program-duration">Program duration and
+                            unit</label></div>
+                        <div class="col-4"><input name="value" type="text" class="form-control"></div>
+                        <div class="col-4"><input name="unit" type="text" class="form-control"></div>
                     </div>
-                </div>
-            </form>
+                    <div class="row">
+                        <div class="col-4"></div>
+                        <div class="col-4 form-text">Enter the value</div>
+                        <div class="col-4 form-text">Enter the unit (ms/s/m/h/d)</div>
+                    </div>
+                    <div class="row mt-1">
+                        <div class="col-8"></div>
+                        <div class="col-4">
+                            <button type="submit" class="btn btn-primary float-end" onclick="delayed_reload()">Add
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <table id="step_tbl" class="table table-striped mt-4">
+                    <thead>
+                    <tr>
+                        <td>Step ID</td>
+                        <td>Duration (d:h:m:s:ms)</td>
+                        <td>Sensor targets</td>
+                        <td>Actions</td>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
-    <table id="step_tbl" class="table table-striped mt-4">
-        <thead>
-            <tr>
-                <td>Step ID</td>
-                <td>Duration (d:h:m:s:ms)</td>
-                <td>Sensor targets</td>
-                <td>Actions</td>
-            </tr>
-        </thead>
-        <tbody>
-        </tbody>
-    </table>
-</div>
-<script>
-    document.getElementById('new-step').setAttribute('action','/api/program/'+current_prog_id+'/step')
-    document.getElementById('title-heading').innerHTML = '<h2> Edit Program - ' + current_prog_id + '</h2>'
-</script>
+    <div class="container"><div class="col mt-5 mb-5"><hr /></div> </div>
+    <div class="container">
+        <div class="row mt-5">
+            <div class="col-6">
+                <h3>Events</h3>
+            </div>
+            <div class="col-6">
+                <button class="btn btn-primary float-end" data-bs-toggle="collapse" data-bs-target="#new_event_form"
+                        aria-expanded="false" aria-controls="new_event_form">Add new event...
+                </button>
+            </div>
+        </div>
+        <div class="row pt-4">
+            <div id="new_event_form" class="collapse">
+                <form id="new-event" method="post">
+                    <div class="row">
+                        <div class="col-4"><label class="form-label" for="program-duration">Define the new event</label>
+                        </div>
+                        <div class="col-4"><input name="name" type="text" class="form-control"></div>
+                        <div class="col-4"><input name="sensor" type="text" class="form-control"></div>
+                    </div>
+                    <div class="row">
+                        <div class="col-4"></div>
+                        <div class="col-4 form-text">Enter the events name</div>
+                        <div class="col-4 form-text">Enter the sensor to validate against</div>
+                    </div>
+                    <div class="row mt-4">
+                        <div class="col-4"></div>
+                        <div class="col-4"><input name="eval" type="text" class="form-control"></div>
+                        <div class="col-4"><input name="derivation" type="text" class="form-control"></div>
+                    </div>
+                    <div class="row">
+                        <div class="col-4"></div>
+                        <div class="col-4 form-text">
+                            Enter the evaluation string <br/>
+                            (i.e.: >,<,==,%)
+                        </div>
+                        <div class="col-4 form-text">Enter the allowed derivation</div>
+                    </div>
+                    <div class="row mt-1">
+                        <div class="col-8"></div>
+                        <div class="col-4">
+                            <button type="submit" class="btn btn-primary float-end" onclick="delayed_reload()">Add
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <table id="event_tbl" class="table table-striped mt-4">
+                    <thead>
+                    <tr>
+                        <td>Event ID</td>
+                        <td>Name</td>
+                        <td>Sensor</td>
+                        <td>Evaluation</td>
+                        <td>Derivation</td>
+                        <td>Action</td>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <script>
+        document.getElementById('new-step').setAttribute('action', '/api/program/' + current_prog_id + '/step')
+        document.getElementById('new-event').setAttribute('action', '/api/program/' + current_prog_id + '/event')
+        document.getElementById('title-heading').innerHTML = '<h2> Edit Program - ' + current_prog_id + '</h2>'
+    </script>
 {% endblock %}

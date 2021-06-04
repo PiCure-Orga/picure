@@ -14,11 +14,13 @@
 #      You should have received a copy of the GNU General Public License
 #      along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+
 def test_index(client):
     assert client.get("/").status == "200 OK"
 
     assert client.get("/program").status == "200 OK"
     assert client.get("/program/1").status == "200 OK"
     assert client.get("/program/1/step/1").status == "200 OK"
+    assert client.get("/program/1/event/1").status == "200 OK"
 
     assert client.get("/run").status == "200 OK"

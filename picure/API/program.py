@@ -161,3 +161,115 @@ def delete_target(prog_id, step_id, sensor):
     get_db().cursor().close()
 
     return Response(response="Deleted step", status=204)
+
+
+@program.route("/api/program/<int:prog_id>/event", methods=["POST"])
+def new_prog_event(prog_id):
+    form = request.form.to_dict()
+    if not (
+        "name" in form
+        and "sensor" in form
+        and "eval" in form
+        and "derivation" in form
+        and len(form) == 4
+    ):
+        abort(500)
+
+    get_db().cursor().execute(
+        "INSERT INTO event (program_id, name, sensor, eval, derivation) VALUES (?,?,?,?,?)",
+        (prog_id, form["name"], form["sensor"], form["eval"], form["derivation"]),
+    )
+    get_db().commit()
+    get_db().cursor().close()
+
+    return Response(response="Event created", status=204)
+
+
+@program.route("/api/program/<int:prog_id>/event", methods=["GET"])
+def get_prog_events(prog_id):
+    dat = (
+        get_db()
+        .cursor()
+        .execute(
+            "SELECT id,name,sensor,eval,derivation from event where program_id = ?",
+            (prog_id,),
+        )
+        .fetchall()
+    )
+    return json.dumps(
+        [
+            {
+                "id": r["id"],
+                "name": r["name"],
+                "sensor": r["sensor"],
+                "evaluation": r["eval"],
+                "derivation": r["derivation"],
+            }
+            for r in dat
+        ]
+    )
+
+
+@program.route("/api/program/<int:prog_id>/event/<int:event_id>", methods=["DELETE"])
+def delete_event(prog_id, event_id):
+    get_db().cursor().execute("DELETE FROM event where id=?", (event_id,))
+    get_db().commit()
+    get_db().cursor().close()
+    return Response(response="Event deleted", status=204)
+
+
+@program.route("/api/program/<int:prog_id>/event/<int:event_id>/task", methods=["POST"])
+def new_event_tasks(prog_id, event_id):
+    form = request.form.to_dict()
+    if not (
+        "name" in form
+        and "hardware" in form
+        and "action" in form
+        and "duration" in form
+        and len(form) == 4
+    ):
+        abort(500)
+
+    get_db().cursor().execute(
+        "INSERT INTO task (event_id, name, hardware, action, duration) VALUES (?,?,?,?,?)",
+        (event_id, form["name"], form["hardware"], form["action"], form["duration"]),
+    )
+    get_db().commit()
+    get_db().cursor().close()
+    return Response(response="Task created", status=204)
+
+
+@program.route("/api/program/<int:prog_id>/event/<int:event_id>/task", methods=["GET"])
+def get_event_tasks(prog_id, event_id):
+    dat = (
+        get_db()
+        .cursor()
+        .execute(
+            "SELECT id, name, hardware, action, duration FROM task where event_id = ?",
+            (event_id,),
+        )
+        .fetchall()
+    )
+    return json.dumps(
+        [
+            {
+                "id": r["id"],
+                "name": r["name"],
+                "hardware": r["hardware"],
+                "action": r["action"],
+                "duration": r["duration"],
+            }
+            for r in dat
+        ]
+    )
+
+
+@program.route(
+    "/api/program/<int:prog_id>/event/<int:event_id>/task/<int:task_id>",
+    methods=["DELETE"],
+)
+def delete_event_tasks(prog_id, event_id, task_id):
+    get_db().cursor().execute("DELETE FROM task where id = ?", (task_id,))
+    get_db().commit()
+    get_db().cursor().close()
+    return Response(response="Task deleted", status=204)
