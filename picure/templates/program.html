@@ -13,7 +13,7 @@ function delete_prog(prog_id) {
     req.open("DELETE", "/api/program/"+prog_id, true)
     req.onload = function () {
         if(req.readyState == req.DONE){
-            if(req.status == "200"){
+            if(req.status == "204"){
                 delayed_reload()
                 console.log("DELETED program with id: "+prog_id)
             }
@@ -27,6 +27,31 @@ function delete_prog(prog_id) {
         }
     }
     req.send()
+}
+
+function start_prog(prog_id) {
+    req = new XMLHttpRequest()
+    req.open("POST", "/api/run", true)
+    req.setRequestHeader('Content-type', 'application/x-www-form-urlencoded')
+    req.onload = function () {
+        if(req.readyState == req.DONE){
+            if(req.status == "204"){
+                var box = document.getElementById("infobox")
+                box.innerHTML = 'Successfully started the program. <a href="/run">See program runs</a>'
+                new bootstrap.Collapse(box, {
+                    show: true
+                })
+            }
+            if(req.status == "500"){
+                var box = document.getElementById("alertbox")
+                box.innerText = 'Warning: Can`t start program. Something is wrong.'
+                new bootstrap.Collapse(box, {
+                    show: true
+                })
+            }
+        }
+    }
+    req.send('program_id='+prog_id+'&enabled=true')
 }
 
 </script>
@@ -79,6 +104,7 @@ function delete_prog(prog_id) {
                         <td>{{ p.name }}</td>
                         <td>{{ p.get_steps()|length }}</td>
                         <td>
+                            <button type="button" class="btn btn-success" onclick="start_prog({{ p.program_id }})">Start</button>
                             <button type="button" class="btn btn-primary" onclick="location.href='/program/{{ p.program_id }}'">Edit</button>
                             <button type="button" class="btn btn-danger" onclick="delete_prog({{ p.program_id }})">Delete</button>
                         </td>

@@ -88,9 +88,7 @@ CREATE TABLE program_run(
     id INTEGER,
     program_id INTEGER,
     enabled INTEGER,
-    paused INTEGER,
     start_timestamp INTEGER,
-    pause_timestamp INTEGER,
     PRIMARY KEY (id),
     FOREIGN KEY (program_id) REFERENCES program(id) ON DELETE CASCADE
 );

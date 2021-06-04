@@ -13,13 +13,12 @@
 #
 #      You should have received a copy of the GNU General Public License
 #      along with this program.  If not, see <https://www.gnu.org/licenses/>.
-from . import graphs, loggerio, state_control, index, program, run
 
+def test_index(client):
+    assert client.get("/").status == "200 OK"
 
-def register_blueprints(app):
-    app.register_blueprint(index.index)
-    app.register_blueprint(state_control.control)
-    app.register_blueprint(loggerio.loggerio)
-    app.register_blueprint(graphs.graphs)
-    app.register_blueprint(program.program)
-    app.register_blueprint(run.run)
+    assert client.get("/program").status == "200 OK"
+    assert client.get("/program/1").status == "200 OK"
+    assert client.get("/program/1/step/1").status == "200 OK"
+
+    assert client.get("/run").status == "200 OK"

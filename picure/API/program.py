@@ -23,17 +23,18 @@ program = Blueprint("program", __name__, template_folder="templates")
 
 @program.route("/api/program", methods=["GET"])
 def get_programs():
-    progs = [
-        {"id": t[1].program_id, "name": t[1].name, "steps": len(t[1].get_steps())}
-        for t in controler.get_dict_of_programs()
-    ]
-    return json.dumps(progs)
+    return json.dumps(
+        [
+            {"program_id": p[1].program_id, "program_name": p[1].name}
+            for p in controler.get_dict_of_programs().items()
+        ]
+    )
 
 
 @program.route("/api/program", methods=["POST"])
 def new_program():
     form_data = request.form.to_dict()
-    if "ProgramName" in form_data:
+    if "ProgramName" in form_data and len(form_data) == 1:
         db = get_db()
         db.cursor().execute(
             "INSERT INTO program (name) VALUES (:ProgramName)", form_data
@@ -59,7 +60,7 @@ def delete_program(prog_id):
     db.cursor().execute("DELETE from program where id = ?", (prog_id,))
     db.commit()
     db.cursor().close()
-    return "Ok"
+    return Response(status=204, response="Deleted program")
 
 
 @program.route("/api/program/<int:prog_id>", methods=["GET"])

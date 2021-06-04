@@ -1,0 +1,120 @@
+{% extends 'base.html' %}
+{% block title %}Run - PiCure {% endblock %}
+{% block head %}
+    <script>
+
+        function delayed_reload(){
+            setTimeout(function () {
+                window.location.reload()
+            }, 100)
+        }
+
+        function delete_run(run) {
+            req = new XMLHttpRequest()
+            req.open("DELETE", "/api/run/"+run, true)
+            req.onload = function () {
+                if(req.readyState == req.DONE){
+                    if(req.status == "204"){
+                        delayed_reload()
+                        console.log("DELETED run: "+run)
+                    }
+                    if(req.status == "500"){
+                        var box = document.getElementById("alertbox")
+                        box.innerText = 'Warning: Can`t delete run. Something is wrong.'
+                        new bootstrap.Collapse(box, {
+                            show: true
+                        })
+                    }
+                }
+            }
+            req.send()
+        }
+
+        function stop_run(run) {
+            req = new XMLHttpRequest()
+            req.open("PATCH", "/api/run/"+run, true)
+            req.setRequestHeader('Content-type', 'application/x-www-form-urlencoded')
+            req.onload = function () {
+                if(req.readyState == req.DONE){
+                    if(req.status == "204"){
+                        delayed_reload()
+                        console.log("Stopped run: "+sensor)
+                    }
+                    if(req.status == "500"){
+                        var box = document.getElementById("alertbox")
+                        box.innerText = 'Warning: Can`t stop run. Something is wrong.'
+                        new bootstrap.Collapse(box, {
+                            show: true
+                        })
+                    }
+                }
+            }
+            req.send('enabled=false')
+        }
+
+        function add_tbl_elements_from_json(data) {
+            var tbl = document.getElementById('run-table').getElementsByTagName('tbody')[0];
+
+            var run_data = Object.entries(data)
+
+            for(i=0; i<run_data.length; i++){
+                var row = tbl.insertRow(i)
+                var run_id_cell = row.insertCell(0)
+                var prog_id_cell = row.insertCell(1)
+                var status_cell = row.insertCell(2)
+                var start_time_cell = row.insertCell(3)
+                var actions_cell = row.insertCell(4)
+
+                run_id_cell.innerText = run_data[i][1]["id"]
+                prog_id_cell.innerHTML = '<a class="link link-primary" href="/program/'+run_data[i][1]["program_id"]+'">'+ run_data[i][1]["name"]+" (# "+run_data[i][1]["program_id"]+")</a>"
+                if(run_data[i][1]["enabled"]) {
+                    status_cell.innerText = "Running"
+                } else {
+                    status_cell.innerText = "Stopped"
+                }
+                start_time_cell.innerText = new Date(run_data[i][1]["start_timestamp"]*1000).toTimeString()
+                if(run_data[i][1]["enabled"]){
+                    actions_cell.innerHTML = '<button type="button" class="btn btn-warning" onclick=\'stop_run("'+run_data[i][1]["id"]+'")\'>STOP</button>'
+                }
+                else{
+                    actions_cell.innerHTML = '<button type="button" class="btn btn-danger" onclick=\'delete_run("'+run_data[i][1]["id"]+'")\'>X</button>'
+                }
+            }
+        }
+
+
+        req = new XMLHttpRequest()
+        req.open("GET", "/api/run")
+        req.onreadystatechange = function () {
+                if(req.readyState == req.DONE){
+                    if(req.status == "200"){
+                        var events = JSON.parse(req.responseText)
+                        add_tbl_elements_from_json(events)
+                    }
+                }
+            }
+        req.send()
+    </script>
+{% endblock %}
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-6">
+            <h2>Program runs</h2>
+        </div>
+    </div>
+    <table id="run-table" class="table table-striped mt-4">
+        <thead>
+            <tr>
+                <td>Run Id</td>
+                <td>Program</td>
+                <td>Status</td>
+                <td>Start timestamp</td>
+                <td>Actions</td>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+</div>
+{% endblock %}

@@ -39,3 +39,8 @@ def edit_program(id):
 @index.route("/program/<int:p_id>/step/<int:s_id>")
 def edit_step(p_id, s_id):
     return render_template("edit_step.html")
+
+
+@index.route("/run")
+def edit_run():
+    return render_template("edit_run.html")
